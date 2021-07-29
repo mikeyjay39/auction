@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-class ItemRepositoryTestIT extends PostgresFactory {
+public class ItemRepositoryTestIT extends PostgresFactory {
 
 	@Autowired
 	private ItemRepository itemRepository;

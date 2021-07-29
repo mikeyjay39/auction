@@ -17,17 +17,21 @@ public class AuctionItem {
 	@Column(name = "id", nullable = false)
 	private Long id;
 
+	@Column(name = "reserve_price")
 	private BigDecimal reservePrice;
 
+	@Column(name = "current_bid")
 	private BigDecimal currentBid;
 
+	@Column(name = "max_auto_bid_amount")
 	private BigDecimal maxAutoBidAmount;
 
 	@OneToOne
+	@Column(name = "item")
 	private Item item;
 
 	@ManyToOne
-	@JoinColumn(name = "userId")
+	@JoinColumn(name = "user_id")
 	private User user;
 
 }

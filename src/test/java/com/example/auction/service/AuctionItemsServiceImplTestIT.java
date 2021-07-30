@@ -37,6 +37,6 @@ class AuctionItemsServiceImplTestIT extends PostgresFactory {
 		PostAuctionItemsResponse response = auctionItemsService.postAuctionItems(request);
 		Assert.assertNotNull("Response should not be null", response);
 		Assert.assertTrue("Failed to add auctionItem",
-				Integer.getInteger(response.getAuctionItemId()) > 0);
+				new Long(response.getAuctionItemId()) > 0L);
 	}
 }

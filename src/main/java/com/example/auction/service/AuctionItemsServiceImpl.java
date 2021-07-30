@@ -27,6 +27,16 @@ public class AuctionItemsServiceImpl implements AuctionItemsService {
 	@Override
 	public PostAuctionItemsResponse postAuctionItems(PostAuctionItemsRequest request) throws
 			AuctionItemException {
+
+		validatePostAuctionItemsRequest(request);
+		AuctionItem auctionItem = prepareAuctionItem(request);
+		auctionItem = auctionItemRepository.save(auctionItem);
+		return preparePostAuctionItemsResponse(auctionItem);
+	}
+
+	private void validatePostAuctionItemsRequest(PostAuctionItemsRequest request) throws
+			AuctionItemException {
+
 		ItemDto itemDto = request.getItemDto();
 
 		if (itemDto == null || itemDto.getId() == null) {
@@ -40,16 +50,20 @@ public class AuctionItemsServiceImpl implements AuctionItemsService {
 		if (request.getReservePrice().compareTo(minReservePrice) <= 0) {
 			throw new AuctionItemException("Request must include a positive number for reserve price");
 		}
+	}
 
+	private AuctionItem prepareAuctionItem(PostAuctionItemsRequest request) {
+		ItemDto itemDto = request.getItemDto();
 		Item item = itemRepository.getById(itemDto.getId());
 		AuctionItem auctionItem = new AuctionItem();
 		auctionItem.setItem(item);
 		auctionItem.setReservePrice(request.getReservePrice());
-		auctionItem = auctionItemRepository.save(auctionItem);
+		return auctionItem;
+	}
 
+	private PostAuctionItemsResponse preparePostAuctionItemsResponse(AuctionItem auctionItem) {
 		PostAuctionItemsResponse response = new PostAuctionItemsResponse();
 		response.setAuctionItemId(auctionItem.getId().toString());
-
 		return response;
 	}
 }

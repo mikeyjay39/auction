@@ -2,6 +2,7 @@ package com.example.auction.service;
 
 import com.example.auction.domain.AuctionItem;
 import com.example.auction.domain.Item;
+import com.example.auction.dto.ApiResponse;
 import com.example.auction.dto.AuctionItemDto;
 import com.example.auction.dto.PostBidsRequest;
 import com.example.auction.repository.AuctionItemRepository;
@@ -39,14 +40,15 @@ class BidServiceImplTestIT extends PostgresFactory {
 		Item item = itemRepository.findAll().stream().findFirst().get();
 		AuctionItem auctionItem = auctionItemRepository
 				.getById(new Long(dataFactory.createAuctionItem(item).getAuctionItemId()));
+		BigDecimal originalBid = auctionItem.getCurrentBid();
 		PostBidsRequest request = new PostBidsRequest();
 		request.setBidderName("John Lennon");
 		request.setAuctionItemId(auctionItem.getId().toString());
-		BigDecimal maxAutoBid = auctionItem.getCurrentBid();
+		BigDecimal maxAutoBid = auctionItem.getReservePrice();
 		BigDecimal newBid = maxAutoBid.add(maxAutoBid);
 		request.setMaxAutoBidAmount(newBid);
-		AuctionItemDto response = bidService.postBids(request);
-		Assert.assertEquals("currentBid was not updated",
-				0, response.getCurrentBid().compareTo(newBid));
+		ApiResponse<AuctionItemDto> response = bidService.postBids(request);
+		Assert.assertTrue("currentBid was not updated",
+				response.getResult().getCurrentBid().compareTo(originalBid) > 0);
 	}
 }

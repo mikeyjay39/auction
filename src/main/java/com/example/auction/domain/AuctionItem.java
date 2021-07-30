@@ -21,13 +21,13 @@ public class AuctionItem {
 	private Long id;
 
 	@Column(name = "reserve_price")
-	private BigDecimal reservePrice;
+	private BigDecimal reservePrice = BigDecimal.ZERO;
 
 	@Column(name = "current_bid")
-	private BigDecimal currentBid;
+	private BigDecimal currentBid = BigDecimal.ZERO;
 
 	@Column(name = "max_auto_bid_amount")
-	private BigDecimal maxAutoBidAmount;
+	private BigDecimal maxAutoBidAmount = BigDecimal.ZERO;
 
 	@OneToOne
 	@JoinColumn(name = "item")

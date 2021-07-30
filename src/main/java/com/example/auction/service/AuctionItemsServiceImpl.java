@@ -88,7 +88,8 @@ public class AuctionItemsServiceImpl implements AuctionItemsService {
 				.collect(Collectors.toList());
 	}
 
-	private AuctionItemDto entityToDto(AuctionItem entity) {
+	@Override
+	public AuctionItemDto entityToDto(AuctionItem entity) {
 		AuctionItemDto dto = new AuctionItemDto();
 
 		if (entity.getId() != null) {

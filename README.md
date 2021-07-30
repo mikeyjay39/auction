@@ -13,3 +13,4 @@ bad as the app scales.
 * Caching layer
 * Authentication with Spring Security
 * UML diagrams
+* Remove string literals (add i18n)

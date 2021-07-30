@@ -1,5 +1,6 @@
 package com.example.auction.service;
 
+import com.example.auction.domain.AuctionItem;
 import com.example.auction.dto.AuctionItemDto;
 import com.example.auction.dto.PostAuctionItemsRequest;
 import com.example.auction.dto.PostAuctionItemsResponse;
@@ -14,4 +15,6 @@ public interface AuctionItemsService {
 	List<AuctionItemDto> getAuctionItems();
 
 	AuctionItemDto getAuctionItem(String id);
+
+	AuctionItemDto entityToDto(AuctionItem entity);
 }

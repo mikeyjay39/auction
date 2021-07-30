@@ -91,9 +91,7 @@ class BidServiceImplTest {
 	}
 
 	private void postBidsOutbiddedTest() throws Exception {
-		PostBidsRequest postBidsRequest = new PostBidsRequest();
-		postBidsRequest.setAuctionItemId(auctionItem.getId().toString());
-		postBidsRequest.setBidderName(selfUser.getUsername());
+		PostBidsRequest postBidsRequest = buildPostBidsRequest();
 		postBidsRequest.setMaxAutoBidAmount(auctionItem.getMaxAutoBidAmount().subtract(BigDecimal.ONE));
 		ApiResponse<AuctionItemDto> response = bidService.postBids(postBidsRequest);
 		Assert.assertEquals("Status should be Outbid", ApiStatus.OUTBID.toString(), response.getStatus());
@@ -104,9 +102,7 @@ class BidServiceImplTest {
 	}
 
 	private void postBidsNewHighBidTest() throws Exception {
-		PostBidsRequest postBidsRequest = new PostBidsRequest();
-		postBidsRequest.setAuctionItemId(auctionItem.getId().toString());
-		postBidsRequest.setBidderName(selfUser.getUsername());
+		PostBidsRequest postBidsRequest = buildPostBidsRequest();
 		postBidsRequest.setMaxAutoBidAmount(previousMaxAutoBid.add(previousMaxAutoBid));
 		ApiResponse<AuctionItemDto> response = bidService.postBids(postBidsRequest);
 		Assert.assertEquals("Status should be SUCCESS", ApiStatus.SUCCESS.toString(), response.getStatus());
@@ -121,21 +117,24 @@ class BidServiceImplTest {
 	}
 
 	private void postBidsInvalidBidTest() throws Exception {
-		PostBidsRequest postBidsRequest = new PostBidsRequest();
-		postBidsRequest.setAuctionItemId(auctionItem.getId().toString());
-		postBidsRequest.setBidderName(selfUser.getUsername());
+		PostBidsRequest postBidsRequest = buildPostBidsRequest();
 		postBidsRequest.setMaxAutoBidAmount(BigDecimal.ZERO.subtract(BigDecimal.ONE));
 		Assert.assertThrows(PostBidsException.class, () -> bidService.postBids(postBidsRequest));
 	}
 
 	private void postBidsReservePriceNotMetTest() throws Exception {
-		PostBidsRequest postBidsRequest = new PostBidsRequest();
-		postBidsRequest.setAuctionItemId(auctionItem.getId().toString());
-		postBidsRequest.setBidderName(selfUser.getUsername());
+		PostBidsRequest postBidsRequest = buildPostBidsRequest();
 		postBidsRequest.setMaxAutoBidAmount(BigDecimal.ONE);
 		ApiResponse<AuctionItemDto> response = bidService.postBids(postBidsRequest);
 		Assert.assertEquals("Should return reserve price not met status",
 				"Bid has not met the reserve price",
 				response.getStatus());
+	}
+
+	private PostBidsRequest buildPostBidsRequest() {
+		PostBidsRequest postBidsRequest = new PostBidsRequest();
+		postBidsRequest.setAuctionItemId(auctionItem.getId().toString());
+		postBidsRequest.setBidderName(selfUser.getUsername());
+		return postBidsRequest;
 	}
 }

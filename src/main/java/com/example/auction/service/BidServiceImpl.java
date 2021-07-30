@@ -9,7 +9,6 @@ import com.example.auction.dto.PostBidsRequest;
 import com.example.auction.exception.PostBidsException;
 import com.example.auction.repository.AuctionItemRepository;
 import com.example.auction.repository.UserRepository;
-import liquibase.pro.packaged.A;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -27,70 +26,104 @@ public class BidServiceImpl implements BidService {
 		this.userRepository = userRepository;
 	}
 
-	// TODO refactor
 	@Override
 	public ApiResponse<AuctionItemDto> postBids(PostBidsRequest request) throws PostBidsException {
 
-		BigDecimal maxBidAmount = request.getMaxAutoBidAmount();
-		ApiResponse apiResponse = new ApiResponse();
+		BigDecimal maxBidAmount = validateMaxAutoBidAmount(request);
+		String auctionItemId = validateAuctionItemId(request);
+		AuctionItem auctionItem = auctionItemRepository.findOneFetchItem(new Long(auctionItemId));
 
+		if (isReservePriceNotMet(maxBidAmount, auctionItem)) {
+			return doReservePriceNotMet(maxBidAmount, auctionItem);
+		}
+
+		if (isMaxBidGreaterThanCurrentBid(maxBidAmount, auctionItem)) {
+			return doNewHighBid(maxBidAmount, auctionItem, request);
+		} else {
+			return doOutbid(maxBidAmount, auctionItem);
+		}
+
+	}
+
+	private BigDecimal validateMaxAutoBidAmount(PostBidsRequest request) throws PostBidsException {
+		BigDecimal maxBidAmount = request.getMaxAutoBidAmount();
 		if (maxBidAmount == null || maxBidAmount.compareTo(BigDecimal.ZERO) <= 0) {
 			throw new PostBidsException(String.format("Invalid bid amount of %s", maxBidAmount));
 		}
 
+		return maxBidAmount;
+	}
+
+	private String validateAuctionItemId(PostBidsRequest request) throws PostBidsException {
 		String auctionItemId = request.getAuctionItemId();
 
 		if (auctionItemId == null || auctionItemId.isEmpty()) {
 			throw new PostBidsException("Invalid request. AuctionItemId is missing");
 		}
 
-		AuctionItem auctionItem = auctionItemRepository.findOneFetchItem(new Long(auctionItemId));
+		return auctionItemId;
+	}
 
-		// reserve price not met
-		if (maxBidAmount.compareTo(auctionItem.getReservePrice()) < 0) {
-			BigDecimal newCurrentBid = maxBidAmount.compareTo(auctionItem.getCurrentBid()) < 0 ?
-					auctionItem.getCurrentBid() : maxBidAmount;
-			auctionItem.setCurrentBid(newCurrentBid);
-			auctionItemRepository.save(auctionItem);
-			AuctionItemDto dto = auctionItemsService.entityToDto(auctionItem);
-			apiResponse.setResult(dto);
-			apiResponse.setStatus("Bid has not met the reserve price");
-			return apiResponse;
-		}
+	private boolean isReservePriceNotMet(BigDecimal maxBidAmount, AuctionItem auctionItem) {
+		return maxBidAmount.compareTo(auctionItem.getReservePrice()) < 0;
+	}
 
-		// new max bid is greater than current bid
-		if (maxBidAmount.compareTo(auctionItem.getCurrentBid().add(BigDecimal.ONE)) >= 0) {
+	private ApiResponse<AuctionItemDto> doReservePriceNotMet(BigDecimal maxBidAmount,
+															 AuctionItem auctionItem) {
+		ApiResponse<AuctionItemDto> apiResponse = new ApiResponse<>();
+		BigDecimal newCurrentBid = maxBidAmount.compareTo(auctionItem.getCurrentBid()) < 0 ?
+				auctionItem.getCurrentBid() : maxBidAmount;
+		auctionItem.setCurrentBid(newCurrentBid);
+		auctionItemRepository.save(auctionItem);
+		AuctionItemDto dto = auctionItemsService.entityToDto(auctionItem);
+		apiResponse.setResult(dto);
+		apiResponse.setStatus("Bid has not met the reserve price");
+		return apiResponse;
+	}
 
-			BigDecimal currentMaxAutoBid = auctionItem.getMaxAutoBidAmount();
-			BigDecimal newCurrentBid;
+	private boolean isMaxBidGreaterThanCurrentBid(BigDecimal maxBidAmount, AuctionItem auctionItem) {
+		return maxBidAmount.compareTo(auctionItem.getCurrentBid().add(BigDecimal.ONE)) >= 0;
+	}
 
-			if (maxBidAmount.compareTo(currentMaxAutoBid.add(BigDecimal.ONE)) >= 0) {
-				// new bid is higher than max
-				newCurrentBid = currentMaxAutoBid.add(BigDecimal.ONE);
-				auctionItem.setMaxAutoBidAmount(maxBidAmount);
-				User user = userRepository.findByUsername(request.getBidderName());
-				auctionItem.setUser(user);
-				apiResponse.setStatus(ApiStatus.SUCCESS.name());
-			} else {
-				// current bidder is still highest bidder but current bid increases
-				newCurrentBid = maxBidAmount.add(BigDecimal.ONE);
-				apiResponse.setStatus(ApiStatus.OUTBID.name());
-			}
+	private ApiResponse<AuctionItemDto> doNewHighBid(BigDecimal maxBidAmount,
+													 AuctionItem auctionItem,
+													 PostBidsRequest request) {
 
-			auctionItem.setCurrentBid(newCurrentBid);
-			auctionItemRepository.save(auctionItem);
-			AuctionItemDto dto = auctionItemsService.entityToDto(auctionItem);
-			apiResponse.setResult(dto);
-			return apiResponse;
+		ApiResponse<AuctionItemDto> apiResponse = new ApiResponse<>();
+		BigDecimal currentMaxAutoBid = auctionItem.getMaxAutoBidAmount();
+		BigDecimal newCurrentBid;
+
+		if (isNewBidHigherThanMax(maxBidAmount, currentMaxAutoBid)) {
+			newCurrentBid = currentMaxAutoBid.add(BigDecimal.ONE);
+			auctionItem.setMaxAutoBidAmount(maxBidAmount);
+			User user = userRepository.findByUsername(request.getBidderName());
+			auctionItem.setUser(user);
+			apiResponse.setStatus(ApiStatus.SUCCESS.name());
 		} else {
-			// outbidded
-			auctionItem.setCurrentBid(maxBidAmount);
-			auctionItemRepository.save(auctionItem);
-			AuctionItemDto dto = auctionItemsService.entityToDto(auctionItem);
-			apiResponse.setResult(dto);
+
+			newCurrentBid = maxBidAmount.add(BigDecimal.ONE);
 			apiResponse.setStatus(ApiStatus.OUTBID.name());
-			return apiResponse;
 		}
 
+		auctionItem.setCurrentBid(newCurrentBid);
+		auctionItemRepository.save(auctionItem);
+		AuctionItemDto dto = auctionItemsService.entityToDto(auctionItem);
+		apiResponse.setResult(dto);
+		return apiResponse;
+	}
+
+	private boolean isNewBidHigherThanMax(BigDecimal maxBidAmount, BigDecimal currentMaxAutoBid) {
+		return maxBidAmount.compareTo(currentMaxAutoBid.add(BigDecimal.ONE)) >= 0;
+	}
+
+	private ApiResponse<AuctionItemDto> doOutbid(BigDecimal maxBidAmount,
+												 AuctionItem auctionItem) {
+		ApiResponse<AuctionItemDto> apiResponse = new ApiResponse<>();
+		auctionItem.setCurrentBid(maxBidAmount);
+		auctionItemRepository.save(auctionItem);
+		AuctionItemDto dto = auctionItemsService.entityToDto(auctionItem);
+		apiResponse.setResult(dto);
+		apiResponse.setStatus(ApiStatus.OUTBID.name());
+		return apiResponse;
 	}
 }

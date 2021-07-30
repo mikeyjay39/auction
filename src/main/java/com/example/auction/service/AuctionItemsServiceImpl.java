@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -51,7 +52,7 @@ public class AuctionItemsServiceImpl implements AuctionItemsService {
 	private void validatePostAuctionItemsRequest(PostAuctionItemsRequest request) throws
 			AuctionItemException {
 
-		ItemDto itemDto = request.getItemDto();
+		ItemDto itemDto = request.getItem();
 
 		if (itemDto == null || itemDto.getItemId() == null) {
 			throw new AuctionItemException("Request must include item");
@@ -64,10 +65,16 @@ public class AuctionItemsServiceImpl implements AuctionItemsService {
 		if (request.getReservePrice().compareTo(zeroPrice) <= 0) {
 			throw new AuctionItemException("Request must include a positive number for reserve price");
 		}
+		String itemId = request.getItem().getItemId();
+		Optional<Item> item = itemRepository.findById(new Long(itemId));
+
+		if (!item.isPresent()) {
+			throw new AuctionItemException(String.format("Item %s not found", itemId));
+		}
 	}
 
 	private AuctionItem prepareAuctionItem(PostAuctionItemsRequest request) {
-		ItemDto itemDto = request.getItemDto();
+		ItemDto itemDto = request.getItem();
 		Item item = itemRepository.getById(new Long(itemDto.getItemId()));
 		AuctionItem auctionItem = new AuctionItem();
 		auctionItem.setItem(item);

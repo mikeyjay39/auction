@@ -6,7 +6,7 @@ public class PostAuctionItemsRequest {
 
 	private BigDecimal reservePrice;
 
-	private ItemDto itemDto;
+	private ItemDto item;
 
 	public BigDecimal getReservePrice() {
 		return reservePrice;
@@ -16,11 +16,11 @@ public class PostAuctionItemsRequest {
 		this.reservePrice = reservePrice;
 	}
 
-	public ItemDto getItemDto() {
-		return itemDto;
+	public ItemDto getItem() {
+		return item;
 	}
 
-	public void setItemDto(ItemDto itemDto) {
-		this.itemDto = itemDto;
+	public void setItem(ItemDto item) {
+		this.item = item;
 	}
 }

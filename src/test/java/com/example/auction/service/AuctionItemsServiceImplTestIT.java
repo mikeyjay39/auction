@@ -104,7 +104,7 @@ class AuctionItemsServiceImplTestIT extends PostgresFactory {
 		itemDto.setItemId(item.getId().toString());
 		itemDto.setDescription(item.getDescription());
 		PostAuctionItemsRequest request = new PostAuctionItemsRequest();
-		request.setItemDto(itemDto);
+		request.setItem(itemDto);
 		request.setReservePrice(reservePrice);
 		return auctionItemsService.postAuctionItems(request);
 	}

@@ -17,7 +17,7 @@ public class AuctionItemsServiceImpl implements AuctionItemsService {
 
 	private final AuctionItemRepository auctionItemRepository;
 	private final ItemRepository itemRepository;
-	private final BigDecimal minReservePrice = new BigDecimal("0");
+	private final BigDecimal zeroPrice = new BigDecimal("0");
 
 	public AuctionItemsServiceImpl(AuctionItemRepository auctionItemRepository, ItemRepository itemRepository) {
 		this.auctionItemRepository = auctionItemRepository;
@@ -47,7 +47,7 @@ public class AuctionItemsServiceImpl implements AuctionItemsService {
 			throw new AuctionItemException("Request must include a reserve price");
 		}
 
-		if (request.getReservePrice().compareTo(minReservePrice) <= 0) {
+		if (request.getReservePrice().compareTo(zeroPrice) <= 0) {
 			throw new AuctionItemException("Request must include a positive number for reserve price");
 		}
 	}
@@ -58,6 +58,7 @@ public class AuctionItemsServiceImpl implements AuctionItemsService {
 		AuctionItem auctionItem = new AuctionItem();
 		auctionItem.setItem(item);
 		auctionItem.setReservePrice(request.getReservePrice());
+		auctionItem.setCurrentBid(zeroPrice);
 		return auctionItem;
 	}
 

@@ -18,11 +18,16 @@ public class BidServiceImpl implements BidService {
 
 	private final AuctionItemRepository auctionItemRepository;
 	private final AuctionItemsService auctionItemsService;
+	private final ElasticsearchService elasticsearchService;
 	private final UserRepository userRepository;
 
-	public BidServiceImpl(AuctionItemRepository auctionItemRepository, AuctionItemsService auctionItemsService, UserRepository userRepository) {
+	public BidServiceImpl(AuctionItemRepository auctionItemRepository,
+						  AuctionItemsService auctionItemsService,
+						  ElasticsearchService elasticsearchService,
+						  UserRepository userRepository) {
 		this.auctionItemRepository = auctionItemRepository;
 		this.auctionItemsService = auctionItemsService;
+		this.elasticsearchService = elasticsearchService;
 		this.userRepository = userRepository;
 	}
 

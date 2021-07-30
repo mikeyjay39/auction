@@ -9,7 +9,7 @@ I went for a full join on the tables to return everything. This is
 bad as the app scales.
 
 ### TODO
-* Elasticsearch for bid history
+* Controllers
 * Caching layer
 * Authentication with Spring Security
 * UML diagrams

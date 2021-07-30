@@ -38,7 +38,7 @@ class BidServiceImplTest {
 
 	@BeforeEach
 	void setUp() {
-		bidService = new BidServiceImpl(auctionItemRepository, auctionItemsService, userRepository);
+		bidService = new BidServiceImpl(auctionItemRepository, auctionItemsService, null, userRepository);
 		auctionItem = new AuctionItem();
 		auctionItem.setId(1L);
 		Item item = new Item();

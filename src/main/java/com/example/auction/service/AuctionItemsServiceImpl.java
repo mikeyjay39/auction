@@ -42,6 +42,12 @@ public class AuctionItemsServiceImpl implements AuctionItemsService {
 		return getAllAuctionItemDtos();
 	}
 
+	@Override
+	public AuctionItemDto getAuctionItem(String id) {
+		AuctionItem auctionItem = auctionItemRepository.findOneFetchItem(new Long(id));
+		return entityToDto(auctionItem);
+	}
+
 	private void validatePostAuctionItemsRequest(PostAuctionItemsRequest request) throws
 			AuctionItemException {
 
@@ -77,7 +83,7 @@ public class AuctionItemsServiceImpl implements AuctionItemsService {
 	}
 
 	private List<AuctionItemDto> getAllAuctionItemDtos() {
-		return auctionItemRepository.findAll().stream()
+		return auctionItemRepository.findAllFetchItem().stream()
 				.map(this::entityToDto)
 				.collect(Collectors.toList());
 	}

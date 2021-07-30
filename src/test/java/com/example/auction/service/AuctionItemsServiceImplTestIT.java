@@ -42,6 +42,12 @@ class AuctionItemsServiceImplTestIT extends PostgresFactory {
 		getAuctionItemsTest();
 	}
 
+	@Test
+	@Transactional
+	void getAuctionItem() throws Exception {
+		getAuctionItemTest();
+	}
+
 	private void postAuctionItemsTest() throws Exception {
 		Item item = itemRepository.findAll().stream()
 				.findFirst().get();
@@ -71,8 +77,26 @@ class AuctionItemsServiceImplTestIT extends PostgresFactory {
 					&& dto.getAuctionItemId().isEmpty());
 			Assert.assertTrue("Reserve price doesn't match",
 					dto.getReservePrice().compareTo(reservePrice) == 0);
+			Assert.assertTrue("CurrentBid doesn't match",
+					dto.getCurrentBid().compareTo(new BigDecimal("0")) == 0);
 		}
 
+	}
+
+	private void getAuctionItemTest() throws Exception {
+		Item item = itemRepository.findAll().stream()
+				.findFirst().get();
+		createAuctionItem(item);
+		AuctionItem auctionItem = auctionItemRepository.findAll().stream()
+						.findFirst().get();
+
+		AuctionItemDto dto = auctionItemsService.getAuctionItem(auctionItem.getId().toString());
+		Assert.assertFalse("No id set", dto.getAuctionItemId() == null
+				&& dto.getAuctionItemId().isEmpty());
+		Assert.assertTrue("Reserve price doesn't match",
+				dto.getReservePrice().compareTo(auctionItem.getReservePrice()) == 0);
+		Assert.assertTrue("CurrentBid doesn't match",
+				dto.getCurrentBid().compareTo(auctionItem.getCurrentBid()) == 0);
 	}
 
 	private PostAuctionItemsResponse createAuctionItem(Item item) throws Exception {

@@ -12,4 +12,6 @@ public interface AuctionItemsService {
 	PostAuctionItemsResponse postAuctionItems(PostAuctionItemsRequest request) throws AuctionItemException;
 
 	List<AuctionItemDto> getAuctionItems();
+
+	AuctionItemDto getAuctionItem(String id);
 }

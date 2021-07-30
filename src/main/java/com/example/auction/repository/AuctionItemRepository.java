@@ -12,4 +12,7 @@ public interface AuctionItemRepository extends JpaRepository<AuctionItem, Long> 
 
 	@Query("select ai from AuctionItem ai join fetch ai.item")
 	List<AuctionItem> findAllFetchItem();
+
+	@Query("select ai from AuctionItem ai join fetch ai.item where ai.id = :id")
+	AuctionItem findOneFetchItem(Long id);
 }

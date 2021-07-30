@@ -2,16 +2,16 @@ package com.example.auction.dto;
 
 public class ItemDto {
 
-	private Long id;
+	private String itemId;
 
 	private String description;
 
-	public Long getId() {
-		return id;
+	public String getItemId() {
+		return itemId;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
+	public void setItemId(String itemId) {
+		this.itemId = itemId;
 	}
 
 	public String getDescription() {

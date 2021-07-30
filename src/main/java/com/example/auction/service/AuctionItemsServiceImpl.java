@@ -2,6 +2,7 @@ package com.example.auction.service;
 
 import com.example.auction.domain.AuctionItem;
 import com.example.auction.domain.Item;
+import com.example.auction.dto.AuctionItemDto;
 import com.example.auction.dto.ItemDto;
 import com.example.auction.dto.PostAuctionItemsRequest;
 import com.example.auction.dto.PostAuctionItemsResponse;
@@ -11,6 +12,8 @@ import com.example.auction.repository.ItemRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AuctionItemsServiceImpl implements AuctionItemsService {
@@ -34,12 +37,17 @@ public class AuctionItemsServiceImpl implements AuctionItemsService {
 		return preparePostAuctionItemsResponse(auctionItem);
 	}
 
+	@Override
+	public List<AuctionItemDto> getAuctionItems() {
+		return getAllAuctionItemDtos();
+	}
+
 	private void validatePostAuctionItemsRequest(PostAuctionItemsRequest request) throws
 			AuctionItemException {
 
 		ItemDto itemDto = request.getItemDto();
 
-		if (itemDto == null || itemDto.getId() == null) {
+		if (itemDto == null || itemDto.getItemId() == null) {
 			throw new AuctionItemException("Request must include item");
 		}
 
@@ -54,7 +62,7 @@ public class AuctionItemsServiceImpl implements AuctionItemsService {
 
 	private AuctionItem prepareAuctionItem(PostAuctionItemsRequest request) {
 		ItemDto itemDto = request.getItemDto();
-		Item item = itemRepository.getById(itemDto.getId());
+		Item item = itemRepository.getById(new Long(itemDto.getItemId()));
 		AuctionItem auctionItem = new AuctionItem();
 		auctionItem.setItem(item);
 		auctionItem.setReservePrice(request.getReservePrice());
@@ -66,5 +74,28 @@ public class AuctionItemsServiceImpl implements AuctionItemsService {
 		PostAuctionItemsResponse response = new PostAuctionItemsResponse();
 		response.setAuctionItemId(auctionItem.getId().toString());
 		return response;
+	}
+
+	private List<AuctionItemDto> getAllAuctionItemDtos() {
+		return auctionItemRepository.findAll().stream()
+				.map(this::entityToDto)
+				.collect(Collectors.toList());
+	}
+
+	private AuctionItemDto entityToDto(AuctionItem entity) {
+		AuctionItemDto dto = new AuctionItemDto();
+
+		if (entity.getId() != null) {
+			dto.setAuctionItemId(entity.getId().toString());
+		}
+
+		dto.setCurrentBid(entity.getCurrentBid());
+		dto.setReservePrice(entity.getReservePrice());
+		ItemDto itemDto = new ItemDto();
+		itemDto.setItemId(entity.getItem().getId().toString());
+		itemDto.setDescription(entity.getItem().getDescription());
+		dto.setItem(itemDto);
+
+		return dto;
 	}
 }

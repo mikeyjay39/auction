@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 
 public class AuctionItemDto {
 
-	private Long id;
+	private String auctionItemId;
 
 	private BigDecimal reservePrice;
 
@@ -16,12 +16,12 @@ public class AuctionItemDto {
 
 	private String bidderName;
 
-	public Long getId() {
-		return id;
+	public String getAuctionItemId() {
+		return auctionItemId;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
+	public void setAuctionItemId(String auctionItemId) {
+		this.auctionItemId = auctionItemId;
 	}
 
 	public BigDecimal getReservePrice() {

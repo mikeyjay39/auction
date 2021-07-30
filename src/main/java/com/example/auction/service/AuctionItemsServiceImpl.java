@@ -96,8 +96,13 @@ public class AuctionItemsServiceImpl implements AuctionItemsService {
 			dto.setAuctionItemId(entity.getId().toString());
 		}
 
+		if (entity.getUser() != null) {
+			dto.setBidderName(entity.getUser().getUsername());
+		}
+
 		dto.setCurrentBid(entity.getCurrentBid());
 		dto.setReservePrice(entity.getReservePrice());
+		dto.setMaxAutoBidAmount(entity.getMaxAutoBidAmount());
 		ItemDto itemDto = new ItemDto();
 		itemDto.setItemId(entity.getItem().getId().toString());
 		itemDto.setDescription(entity.getItem().getDescription());

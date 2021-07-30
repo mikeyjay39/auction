@@ -44,7 +44,7 @@ public class BidServiceImpl implements BidService {
 			throw new PostBidsException("Invalid request. AuctionItemId is missing");
 		}
 
-		AuctionItem auctionItem = auctionItemRepository.getById(new Long(auctionItemId));
+		AuctionItem auctionItem = auctionItemRepository.findOneFetchItem(new Long(auctionItemId));
 
 		// reserve price not met
 		if (maxBidAmount.compareTo(auctionItem.getReservePrice()) < 0) {

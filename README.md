@@ -99,6 +99,8 @@ the table to explode in size if stored in Postgres. Elasticsearch scales
 better horizontally for writes than Postgres so it is more suitable for
 handling big data.
 
+The audit log of bids can be viewed in Kibana: http://localhost:5601
+
 ## Notes
 
 ### GET /auctionItems

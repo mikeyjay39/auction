@@ -8,7 +8,6 @@ import org.elasticsearch.action.DocWriteResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.slf4j.Logger;
@@ -25,11 +24,11 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ElasticsearchServiceImpl.class);
 
-	private final RestClientBuilder restClientBuilder;
+	private final RestHighLevelClient client;
 	private final ObjectMapper mapper;
 
-	public ElasticsearchServiceImpl(RestClientBuilder restClientBuilder, ObjectMapper mapper) {
-		this.restClientBuilder = restClientBuilder;
+	public ElasticsearchServiceImpl(RestHighLevelClient client, ObjectMapper mapper) {
+		this.client = client;
 		this.mapper = mapper;
 	}
 
@@ -40,7 +39,6 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
 
 		try {
 			indexRequest.source(mapper.writeValueAsString(dto), XContentType.JSON);
-			RestHighLevelClient client = openRestHighLevelClient();
 			IndexResponse response = client.index(indexRequest, RequestOptions.DEFAULT);
 			DocWriteResponse.Result responseStatus = response.getResult();
 
@@ -58,10 +56,6 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
 			LOGGER.error(e.getMessage(), e);
 			return ApiStatus.FAILURE;
 		}
-	}
-
-	private RestHighLevelClient openRestHighLevelClient() {
-		return new RestHighLevelClient(restClientBuilder);
 	}
 
 	private ElasticsearchBidDto convertToBidDto(PostBidsRequest request) {

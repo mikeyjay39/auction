@@ -4,6 +4,8 @@
 
 `./build-and-run.sh`
 
+Access web app by going to http://localhost:4200/
+
 Run `./shutdown-containers.sh` to close any containers which did not close
 properly.
 

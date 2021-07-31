@@ -1,6 +1,7 @@
 package com.example.auction.service;
 
 import com.example.auction.dao.AuctionItemDao;
+import com.example.auction.dao.ItemDao;
 import com.example.auction.domain.AuctionItem;
 import com.example.auction.domain.Item;
 import com.example.auction.dto.AuctionItemDto;
@@ -8,8 +9,6 @@ import com.example.auction.dto.ItemDto;
 import com.example.auction.dto.PostAuctionItemsRequest;
 import com.example.auction.dto.PostAuctionItemsResponse;
 import com.example.auction.exception.AuctionItemException;
-import com.example.auction.repository.AuctionItemRepository;
-import com.example.auction.repository.ItemRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -21,12 +20,12 @@ import java.util.stream.Collectors;
 public class AuctionItemsServiceImpl implements AuctionItemsService {
 
 	private final AuctionItemDao auctionItemDao;
-	private final ItemRepository itemRepository;
+	private final ItemDao itemDao;
 	private final BigDecimal zeroPrice = new BigDecimal("0");
 
-	public AuctionItemsServiceImpl(AuctionItemDao auctionItemDao, ItemRepository itemRepository) {
+	public AuctionItemsServiceImpl(AuctionItemDao auctionItemDao, ItemDao itemDao) {
 		this.auctionItemDao = auctionItemDao;
-		this.itemRepository = itemRepository;
+		this.itemDao = itemDao;
 	}
 
 	@Override
@@ -78,7 +77,7 @@ public class AuctionItemsServiceImpl implements AuctionItemsService {
 			throw new AuctionItemException("Request must include a positive number for reserve price");
 		}
 		String itemId = request.getItem().getItemId();
-		Optional<Item> item = itemRepository.findById(new Long(itemId));
+		Optional<Item> item = itemDao.findById(new Long(itemId));
 
 		if (!item.isPresent()) {
 			throw new AuctionItemException(String.format("Item %s not found", itemId));
@@ -93,7 +92,7 @@ public class AuctionItemsServiceImpl implements AuctionItemsService {
 
 	private AuctionItem prepareAuctionItem(PostAuctionItemsRequest request) {
 		ItemDto itemDto = request.getItem();
-		Item item = itemRepository.getById(new Long(itemDto.getItemId()));
+		Item item = itemDao.getById(new Long(itemDto.getItemId()));
 		AuctionItem auctionItem = new AuctionItem();
 		auctionItem.setItem(item);
 		auctionItem.setReservePrice(request.getReservePrice());

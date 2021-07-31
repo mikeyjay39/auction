@@ -1,5 +1,6 @@
 package com.example.auction.service;
 
+import com.example.auction.dao.AuctionItemDao;
 import com.example.auction.domain.AuctionItem;
 import com.example.auction.domain.Item;
 import com.example.auction.dto.AuctionItemDto;
@@ -19,12 +20,12 @@ import java.util.stream.Collectors;
 @Service
 public class AuctionItemsServiceImpl implements AuctionItemsService {
 
-	private final AuctionItemRepository auctionItemRepository;
+	private final AuctionItemDao auctionItemDao;
 	private final ItemRepository itemRepository;
 	private final BigDecimal zeroPrice = new BigDecimal("0");
 
-	public AuctionItemsServiceImpl(AuctionItemRepository auctionItemRepository, ItemRepository itemRepository) {
-		this.auctionItemRepository = auctionItemRepository;
+	public AuctionItemsServiceImpl(AuctionItemDao auctionItemDao, ItemRepository itemRepository) {
+		this.auctionItemDao = auctionItemDao;
 		this.itemRepository = itemRepository;
 	}
 
@@ -36,7 +37,7 @@ public class AuctionItemsServiceImpl implements AuctionItemsService {
 		AuctionItem auctionItem = prepareAuctionItem(request);
 
 		try {
-			auctionItem = auctionItemRepository.save(auctionItem);
+			auctionItem = auctionItemDao.save(auctionItem);
 		} catch (Exception e) {
 			throw new AuctionItemException(e.getMessage());
 		}
@@ -50,7 +51,7 @@ public class AuctionItemsServiceImpl implements AuctionItemsService {
 
 	@Override
 	public AuctionItemDto getAuctionItem(String id) {
-		Optional<AuctionItem> auctionItem = auctionItemRepository.findOneFetchItem(new Long(id));
+		Optional<AuctionItem> auctionItem = auctionItemDao.findOneFetchItem(new Long(id));
 
 		if (auctionItem.isPresent()) {
 			return entityToDto(auctionItem.get());
@@ -83,10 +84,10 @@ public class AuctionItemsServiceImpl implements AuctionItemsService {
 			throw new AuctionItemException(String.format("Item %s not found", itemId));
 		}
 
-		Optional<AuctionItem> auctionItem = auctionItemRepository.findOneByItem(item.get());
+		Optional<AuctionItem> auctionItem = auctionItemDao.findOneByItem(item.get());
 
 		if (auctionItem.isPresent()) {
-			throw new AuctionItemException(String.format("Auction already exists for item", itemId));
+			throw new AuctionItemException(String.format("Auction already exists for item: %s", itemId));
 		}
 	}
 
@@ -107,7 +108,7 @@ public class AuctionItemsServiceImpl implements AuctionItemsService {
 	}
 
 	private List<AuctionItemDto> getAllAuctionItemDtos() {
-		return auctionItemRepository.findAllFetchItem().stream()
+		return auctionItemDao.findAllFetchItem().stream()
 				.map(this::entityToDto)
 				.collect(Collectors.toList());
 	}

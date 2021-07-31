@@ -1,13 +1,13 @@
 package com.example.auction.service;
 
 import com.example.auction.contants.ApiStatus;
+import com.example.auction.dao.AuctionItemDao;
 import com.example.auction.domain.AuctionItem;
 import com.example.auction.domain.User;
 import com.example.auction.dto.ApiResponse;
 import com.example.auction.dto.AuctionItemDto;
 import com.example.auction.dto.PostBidsRequest;
 import com.example.auction.exception.PostBidsException;
-import com.example.auction.repository.AuctionItemRepository;
 import com.example.auction.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -17,16 +17,16 @@ import java.util.Optional;
 @Service
 public class BidServiceImpl implements BidService {
 
-	private final AuctionItemRepository auctionItemRepository;
+	private final AuctionItemDao auctionItemDao;
 	private final AuctionItemsService auctionItemsService;
 	private final ElasticsearchService elasticsearchService;
 	private final UserRepository userRepository;
 
-	public BidServiceImpl(AuctionItemRepository auctionItemRepository,
+	public BidServiceImpl(AuctionItemDao auctionItemDao,
 						  AuctionItemsService auctionItemsService,
 						  ElasticsearchService elasticsearchService,
 						  UserRepository userRepository) {
-		this.auctionItemRepository = auctionItemRepository;
+		this.auctionItemDao = auctionItemDao;
 		this.auctionItemsService = auctionItemsService;
 		this.elasticsearchService = elasticsearchService;
 		this.userRepository = userRepository;
@@ -65,7 +65,7 @@ public class BidServiceImpl implements BidService {
 			throw new PostBidsException("Invalid request. AuctionItemId is missing");
 		}
 
-		Optional<AuctionItem> optionalAuctionItem = auctionItemRepository.findOneFetchItem(new Long(auctionItemId));
+		Optional<AuctionItem> optionalAuctionItem = auctionItemDao.findOneFetchItem(new Long(auctionItemId));
 
 		if (!optionalAuctionItem.isPresent()) {
 			throw new PostBidsException(String.format("No auction found with id = %s", auctionItemId));
@@ -84,7 +84,7 @@ public class BidServiceImpl implements BidService {
 		BigDecimal newCurrentBid = maxBidAmount.compareTo(auctionItem.getCurrentBid()) < 0 ?
 				auctionItem.getCurrentBid() : maxBidAmount;
 		auctionItem.setCurrentBid(newCurrentBid);
-		auctionItemRepository.save(auctionItem);
+		auctionItemDao.save(auctionItem);
 		AuctionItemDto dto = auctionItemsService.entityToDto(auctionItem);
 		apiResponse.setResult(dto);
 		apiResponse.setStatus("Bid has not met the reserve price");
@@ -115,7 +115,7 @@ public class BidServiceImpl implements BidService {
 		}
 
 		auctionItem.setCurrentBid(newCurrentBid);
-		auctionItemRepository.save(auctionItem);
+		auctionItemDao.save(auctionItem);
 		AuctionItemDto dto = auctionItemsService.entityToDto(auctionItem);
 		apiResponse.setResult(dto);
 		return apiResponse;
@@ -129,7 +129,7 @@ public class BidServiceImpl implements BidService {
 												 AuctionItem auctionItem) {
 		ApiResponse<AuctionItemDto> apiResponse = new ApiResponse<>();
 		auctionItem.setCurrentBid(maxBidAmount.max(auctionItem.getCurrentBid()));
-		auctionItemRepository.save(auctionItem);
+		auctionItemDao.save(auctionItem);
 		AuctionItemDto dto = auctionItemsService.entityToDto(auctionItem);
 		apiResponse.setResult(dto);
 		apiResponse.setStatus(ApiStatus.OUTBID.name());

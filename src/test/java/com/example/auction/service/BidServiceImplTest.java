@@ -1,6 +1,7 @@
 package com.example.auction.service;
 
 import com.example.auction.contants.ApiStatus;
+import com.example.auction.dao.AuctionItemDao;
 import com.example.auction.domain.AuctionItem;
 import com.example.auction.domain.Item;
 import com.example.auction.domain.User;
@@ -8,7 +9,6 @@ import com.example.auction.dto.ApiResponse;
 import com.example.auction.dto.AuctionItemDto;
 import com.example.auction.dto.PostBidsRequest;
 import com.example.auction.exception.PostBidsException;
-import com.example.auction.repository.AuctionItemRepository;
 import com.example.auction.repository.UserRepository;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,7 +23,7 @@ class BidServiceImplTest {
 	private BidServiceImpl bidService;
 
 	@Mock
-	private AuctionItemRepository auctionItemRepository = Mockito.mock(AuctionItemRepository.class);
+	private AuctionItemDao auctionItemDao = Mockito.mock(AuctionItemDao.class);
 
 	private AuctionItemsService auctionItemsService = new AuctionItemsServiceImpl(null, null);
 
@@ -38,7 +38,7 @@ class BidServiceImplTest {
 
 	@BeforeEach
 	void setUp() {
-		bidService = new BidServiceImpl(auctionItemRepository, auctionItemsService, null, userRepository);
+		bidService = new BidServiceImpl(auctionItemDao, auctionItemsService, null, userRepository);
 		auctionItem = new AuctionItem();
 		auctionItem.setId(1L);
 		Item item = new Item();
@@ -55,7 +55,7 @@ class BidServiceImplTest {
 		auctionItem.setMaxAutoBidAmount(currentBid.add(currentBid));
 
 		Mockito.doReturn(auctionItem)
-				.when(auctionItemRepository)
+				.when(auctionItemDao)
 				.findOneFetchItem(Mockito.anyLong());
 
 		selfUser = new User();

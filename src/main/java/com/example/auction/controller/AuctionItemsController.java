@@ -22,7 +22,7 @@ import java.util.List;
 @RequestMapping("/api/v1/auctionItems")
 public class AuctionItemsController {
 
-	private final static Logger LOGGER = LoggerFactory.getLogger(AuctionItemsController.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(AuctionItemsController.class);
 
 	private final AuctionItemsService auctionItemsService;
 
@@ -46,7 +46,7 @@ public class AuctionItemsController {
 	}
 
 	private ApiResponse<PostAuctionItemsResponse> doPostAuctionItems(PostAuctionItemsRequest request) {
-		LOGGER.trace("Request received: {}", request.toString());
+		LOGGER.trace("Request received: {}", request);
 		ApiResponse<PostAuctionItemsResponse> apiResponse = new ApiResponse<>();
 
 		try {

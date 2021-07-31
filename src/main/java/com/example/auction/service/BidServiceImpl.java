@@ -103,13 +103,12 @@ public class BidServiceImpl implements BidService {
 		BigDecimal newCurrentBid;
 
 		if (isNewBidHigherThanMax(maxBidAmount, currentMaxAutoBid)) {
-			newCurrentBid = currentMaxAutoBid.add(BigDecimal.ONE);
+			newCurrentBid = currentMaxAutoBid.add(BigDecimal.ONE).max(auctionItem.getReservePrice());
 			auctionItem.setMaxAutoBidAmount(maxBidAmount);
 			User user = userRepository.findByUsername(request.getBidderName());
 			auctionItem.setUser(user);
 			apiResponse.setStatus(ApiStatus.SUCCESS.name());
 		} else {
-
 			newCurrentBid = maxBidAmount.add(BigDecimal.ONE);
 			apiResponse.setStatus(ApiStatus.OUTBID.name());
 		}
@@ -128,7 +127,7 @@ public class BidServiceImpl implements BidService {
 	private ApiResponse<AuctionItemDto> doOutbid(BigDecimal maxBidAmount,
 												 AuctionItem auctionItem) {
 		ApiResponse<AuctionItemDto> apiResponse = new ApiResponse<>();
-		auctionItem.setCurrentBid(maxBidAmount);
+		auctionItem.setCurrentBid(maxBidAmount.max(auctionItem.getCurrentBid()));
 		auctionItemRepository.save(auctionItem);
 		AuctionItemDto dto = auctionItemsService.entityToDto(auctionItem);
 		apiResponse.setResult(dto);

@@ -36,6 +36,7 @@ public class BidServiceImpl implements BidService {
 	public ApiResponse<AuctionItemDto> postBids(PostBidsRequest request) throws PostBidsException {
 		BigDecimal maxBidAmount = validateMaxAutoBidAmount(request);
 		AuctionItem auctionItem = validateAuctionItemId(request);
+		elasticsearchService.logPostBids(request);
 
 		if (isReservePriceNotMet(maxBidAmount, auctionItem)) {
 			return doReservePriceNotMet(maxBidAmount, auctionItem);

@@ -12,6 +12,7 @@ import com.example.auction.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 @Service
 public class BidServiceImpl implements BidService {
@@ -33,10 +34,8 @@ public class BidServiceImpl implements BidService {
 
 	@Override
 	public ApiResponse<AuctionItemDto> postBids(PostBidsRequest request) throws PostBidsException {
-
 		BigDecimal maxBidAmount = validateMaxAutoBidAmount(request);
-		String auctionItemId = validateAuctionItemId(request);
-		AuctionItem auctionItem = auctionItemRepository.findOneFetchItem(new Long(auctionItemId));
+		AuctionItem auctionItem = validateAuctionItemId(request);
 
 		if (isReservePriceNotMet(maxBidAmount, auctionItem)) {
 			return doReservePriceNotMet(maxBidAmount, auctionItem);
@@ -47,7 +46,6 @@ public class BidServiceImpl implements BidService {
 		} else {
 			return doOutbid(maxBidAmount, auctionItem);
 		}
-
 	}
 
 	private BigDecimal validateMaxAutoBidAmount(PostBidsRequest request) throws PostBidsException {
@@ -59,14 +57,20 @@ public class BidServiceImpl implements BidService {
 		return maxBidAmount;
 	}
 
-	private String validateAuctionItemId(PostBidsRequest request) throws PostBidsException {
+	private AuctionItem validateAuctionItemId(PostBidsRequest request) throws PostBidsException {
 		String auctionItemId = request.getAuctionItemId();
 
 		if (auctionItemId == null || auctionItemId.isEmpty()) {
 			throw new PostBidsException("Invalid request. AuctionItemId is missing");
 		}
 
-		return auctionItemId;
+		Optional<AuctionItem> optionalAuctionItem = auctionItemRepository.findOneFetchItem(new Long(auctionItemId));
+
+		if (!optionalAuctionItem.isPresent()) {
+			throw new PostBidsException(String.format("No auction found with id = %s", auctionItemId));
+		}
+
+		return optionalAuctionItem.get();
 	}
 
 	private boolean isReservePriceNotMet(BigDecimal maxBidAmount, AuctionItem auctionItem) {

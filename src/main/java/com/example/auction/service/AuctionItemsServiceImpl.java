@@ -34,7 +34,12 @@ public class AuctionItemsServiceImpl implements AuctionItemsService {
 
 		validatePostAuctionItemsRequest(request);
 		AuctionItem auctionItem = prepareAuctionItem(request);
-		auctionItem = auctionItemRepository.save(auctionItem);
+
+		try {
+			auctionItem = auctionItemRepository.save(auctionItem);
+		} catch (Exception e) {
+			throw new AuctionItemException(e.getMessage());
+		}
 		return preparePostAuctionItemsResponse(auctionItem);
 	}
 
@@ -45,8 +50,14 @@ public class AuctionItemsServiceImpl implements AuctionItemsService {
 
 	@Override
 	public AuctionItemDto getAuctionItem(String id) {
-		AuctionItem auctionItem = auctionItemRepository.findOneFetchItem(new Long(id));
-		return entityToDto(auctionItem);
+		Optional<AuctionItem> auctionItem = auctionItemRepository.findOneFetchItem(new Long(id));
+
+		if (auctionItem.isPresent()) {
+			return entityToDto(auctionItem.get());
+		} else {
+			return null;
+		}
+
 	}
 
 	private void validatePostAuctionItemsRequest(PostAuctionItemsRequest request) throws

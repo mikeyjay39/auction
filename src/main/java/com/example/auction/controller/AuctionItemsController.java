@@ -10,6 +10,7 @@ import com.example.auction.service.AuctionItemsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,6 +40,11 @@ public class AuctionItemsController {
 		return doGetAllAuctionItems();
 	}
 
+	@GetMapping("/auctionItems/{auctionItemId}")
+	public ApiResponse<AuctionItemDto> getAuctionItems(@PathVariable("auctionItemId") String auctionItemId) {
+		return doGetAuctionItems(auctionItemId);
+	}
+
 	private ApiResponse<PostAuctionItemsResponse> doPostAuctionItems(PostAuctionItemsRequest request) {
 		LOGGER.trace("Request received: {}", request.toString());
 		ApiResponse<PostAuctionItemsResponse> apiResponse = new ApiResponse<>();
@@ -63,4 +69,19 @@ public class AuctionItemsController {
 		apiResponse.setStatus(ApiStatus.SUCCESS.name());
 		return apiResponse;
 	}
+
+	private ApiResponse<AuctionItemDto> doGetAuctionItems(String auctionItemId) {
+		LOGGER.trace("doGetAuctionItems");
+		ApiResponse<AuctionItemDto> apiResponse = new ApiResponse<>();
+		apiResponse.setResult(auctionItemsService.getAuctionItem(auctionItemId));
+
+		if (apiResponse.getResult() == null) {
+			apiResponse.setStatus(ApiStatus.NOTFOUND.name());
+		} else {
+			apiResponse.setStatus(ApiStatus.SUCCESS.name());
+		}
+
+		return apiResponse;
+	}
+
 }

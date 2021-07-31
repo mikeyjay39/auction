@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/auctionItems")
 public class AuctionItemsController {
 
 	private final static Logger LOGGER = LoggerFactory.getLogger(AuctionItemsController.class);
@@ -30,17 +30,17 @@ public class AuctionItemsController {
 		this.auctionItemsService = auctionItemsService;
 	}
 
-	@PostMapping("/auctionItems")
+	@PostMapping
 	public ApiResponse<PostAuctionItemsResponse> postAuctionItems(@RequestBody PostAuctionItemsRequest request) {
 		return doPostAuctionItems(request);
 	}
 
-	@GetMapping("/auctionItems")
+	@GetMapping
 	public ApiResponse<List<AuctionItemDto>> getAuctionItems() {
 		return doGetAllAuctionItems();
 	}
 
-	@GetMapping("/auctionItems/{auctionItemId}")
+	@GetMapping("/{auctionItemId}")
 	public ApiResponse<AuctionItemDto> getAuctionItems(@PathVariable("auctionItemId") String auctionItemId) {
 		return doGetAuctionItems(auctionItemId);
 	}

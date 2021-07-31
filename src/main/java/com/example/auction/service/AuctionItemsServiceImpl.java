@@ -71,6 +71,12 @@ public class AuctionItemsServiceImpl implements AuctionItemsService {
 		if (!item.isPresent()) {
 			throw new AuctionItemException(String.format("Item %s not found", itemId));
 		}
+
+		Optional<AuctionItem> auctionItem = auctionItemRepository.findOneByItem(item.get());
+
+		if (auctionItem.isPresent()) {
+			throw new AuctionItemException(String.format("Auction already exists for item", itemId));
+		}
 	}
 
 	private AuctionItem prepareAuctionItem(PostAuctionItemsRequest request) {

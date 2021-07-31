@@ -17,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 class BidServiceImplTest {
 
@@ -24,6 +25,9 @@ class BidServiceImplTest {
 
 	@Mock
 	private AuctionItemDao auctionItemDao = Mockito.mock(AuctionItemDao.class);
+
+	@Mock
+	private ElasticsearchService elasticsearchService = Mockito.mock(ElasticsearchServiceImpl.class);
 
 	private AuctionItemsService auctionItemsService = new AuctionItemsServiceImpl(null, null);
 
@@ -38,7 +42,7 @@ class BidServiceImplTest {
 
 	@BeforeEach
 	void setUp() {
-		bidService = new BidServiceImpl(auctionItemDao, auctionItemsService, null, userRepository);
+		bidService = new BidServiceImpl(auctionItemDao, auctionItemsService, elasticsearchService, userRepository);
 		auctionItem = new AuctionItem();
 		auctionItem.setId(1L);
 		Item item = new Item();
@@ -54,7 +58,7 @@ class BidServiceImplTest {
 		auctionItem.setCurrentBid(currentBid);
 		auctionItem.setMaxAutoBidAmount(currentBid.add(currentBid));
 
-		Mockito.doReturn(auctionItem)
+		Mockito.doReturn(Optional.of(auctionItem))
 				.when(auctionItemDao)
 				.findOneFetchItem(Mockito.anyLong());
 
@@ -65,6 +69,10 @@ class BidServiceImplTest {
 		Mockito.doReturn(selfUser)
 				.when(userRepository)
 				.findByUsername(Mockito.anyString());
+
+		Mockito.doReturn(ApiStatus.SUCCESS)
+				.when(elasticsearchService)
+				.logPostBids(Mockito.any());
 
 		previousCurrentBid = new BigDecimal(auctionItem.getCurrentBid().toString());
 		previousMaxAutoBid = new BigDecimal(auctionItem.getMaxAutoBidAmount().toString());

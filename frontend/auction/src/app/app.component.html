@@ -44,41 +44,70 @@
       </div>
     </div>
   </div>
-  <div class="row text-center">
+</div>
+
+<div class="form-group row text-center">
+  <div class="col-xs-2">
       <h3 class="text-center">
         Get Auction Item Input
       </h3>
-      <form>
-        <div class="form-group">
-          <label for="getAuctionItemId">Item Id:</label>
-          <input type="number" class="form-control" id="getAuctionItemId">
-        </div>
-        <button type="submit" class="btn btn-default">Get</button>
-      </form>
-      <input type="button" value="Get All" (click)="getAllAuctionItems()" />
-    </div>
-  <div class="row">
-    <div class="text-center">
+    <label for="getAuctionItemId">Item Id:</label>
+    <input type="number" class="form-control" id="getAuctionItemId" #getAuctionIdNg>
+    <input type="button" value="Get" class="btn btn-default" (click)="getAuctionItems(getAuctionIdNg.value)"/>
+    <input type="button" value="Get All" class="btn btn-default" (click)="getAllAuctionItems()" />
+  </div>
+</div>
+
+<div class="row">
+    <div>
       <h3 class="text-center">
         Auction Item Output
       </h3>
-      <p>
+      <p class="text-center">
         {{auctionItems.status}}
       </p>
-      <p *ngFor="let result of auctionItems.result">
-        Auction ItemId: {{result.auctionItemId}}
-        Reserve Price: {{result.reservePrice}}
-        Current Bid: {{result.currentBid}}
-        Max Auto Bid: {{result.maxAutoBidAmount}}
-        Item Id: {{result.item.itemId}}
-        Item Description: {{result.item.description}}
-        Bidder Name: {{result.bidderName}}
+      <p class="text-center">
+        {{auctionItem.status}}
       </p>
-      <div id="getAuctionItemOutput">
+      <table class="table" style="text-align:center">
+        <thead>
+        <tr>
+          <th style="text-align:center">Auction Item Id</th>
+          <th style="text-align:center">Reserve Price</th>
+          <th style="text-align:center">Current Bid</th>
+          <th style="text-align:center">Max Auto Bid</th>
+          <th style="text-align:center">Item Id</th>
+          <th style="text-align:center">Item Description</th>
+          <th style="text-align:center">Bidder Name</th>
+        </tr>
+        </thead>
+        <tbody>
 
-      </div>
+        <tr *ngFor="let result of auctionItems.result">
+          <td >{{result.auctionItemId}}</td>
+          <td >{{result.reservePrice}}</td>
+          <td >{{result.currentBid}}</td>
+          <td >{{result.maxAutoBidAmount}}</td>
+          <td >{{result.item.itemId}}</td>
+          <td >{{result.item.description}}</td>
+          <td >{{result.bidderName}}</td>
+        </tr>
+
+        <tr >
+          <td >{{auctionItem.result.auctionItemId}}</td>
+          <td >{{auctionItem.result.reservePrice}}</td>
+          <td >{{auctionItem.result.currentBid}}</td>
+          <td >{{auctionItem.result.maxAutoBidAmount}}</td>
+          <td >{{auctionItem.result.item.itemId}}</td>
+          <td >{{auctionItem.result.item.description}}</td>
+          <td >{{auctionItem.result.bidderName}}</td>
+        </tr>
+        </tbody>
+      </table>
+
+
+
     </div>
-  </div>
 </div>
 
 <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->

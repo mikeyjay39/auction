@@ -9,33 +9,37 @@ import {HttpClient} from "@angular/common/http";
 @Injectable()
 export class AppComponent {
   title = 'auction';
-  auctionItems: any = [];
-  auctionItem: AuctionItemResponse = <AuctionItemResponse>{};
+  auctionItems: AuctionItemsResponse = <AuctionItemsResponse>{};
 
   constructor(private http: HttpClient) {
   }
 
   getAllAuctionItems() {
-    this.auctionItem = <AuctionItemResponse>{};
     this.http.get("http://localhost:8080/api/v1/auctionItems").subscribe(
       (response) => {
-        this.auctionItems = response;
+        this.auctionItems = (<AuctionItemsResponse>response);
       }
     );
   }
 
   getAuctionItems(id: string) {
-    this.auctionItems = null;
     let requestUrl: String;
     requestUrl = "http://localhost:8080/api/v1/auctionItems/".concat(id);
     console.log(requestUrl);
 
     this.http.get(requestUrl.toString()).subscribe(
       (response) => {
-        this.auctionItem = (<AuctionItemResponse>response);
+        this.auctionItems.status = (<AuctionItemResponse>response).status;
+        this.auctionItems.result = [];
+        this.auctionItems.result[0] = (<AuctionItemResponse>response).result;
       }
     );
   }
+}
+
+interface AuctionItemsResponse {
+  status: string
+  result: AuctionItem[]
 }
 
 interface AuctionItemResponse {

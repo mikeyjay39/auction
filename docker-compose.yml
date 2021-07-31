@@ -20,3 +20,13 @@ services:
     restart: on-failure
     depends_on:
       - elasticsearch
+  auction:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - "SPRING_PROFILES_ACTIVE=docker"
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres

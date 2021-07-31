@@ -2,7 +2,7 @@
 
 ## Build and run
 
-`docker-compose up`
+`./build-and-run.sh`
 
 Run `./shutdown-containers.sh` to close any containers which did not close
 properly.
@@ -88,6 +88,17 @@ http://localhost:8080/actuator/health
 All Actuator endpoints are exposed. This can be configured in
 `application.properties`.
 
+* *Make sure you keep an audit log of all bidding*
+
+Bid requests are posted to Elasticsearch since it fits more of the 
+*Big Data* mold instead of being relational. The bid log data does not need to relate to other records, as
+all relevant data can be stored in a single document and posted to
+Elasticsearch. This helps to minimize pressure on Postgres, since each
+bid log represents a new entry that needs to be persisted and could cause
+the table to explode in size if stored in Postgres. Elasticsearch scales
+better horizontally for writes than Postgres so it is more suitable for
+handling big data.
+
 ## Notes
 
 ### GET /auctionItems
@@ -97,9 +108,6 @@ I went for a full join on the tables to return everything. This is
 bad as the app scales.
 
 ### TODO
-* Controllers
-* Caching layer
 * Authentication with Spring Security
 * UML diagrams
 * Remove string literals (add i18n)
-* Actuator health point

@@ -18,7 +18,7 @@ import {Observable} from "rxjs";
 export class AppComponent {
   title = 'auction';
   authenticated = false;
-  loginError = false;
+  loginError:boolean = false;
   username: string = '';
   password: string = '';
   bidderName: string = '';
@@ -114,26 +114,26 @@ export class AppComponent {
     return this.authenticated;
   }
 
+  isLoginError() {
+    return this.loginError;
+  }
+
   login() {
     this.authenticate(this.username, this.password);
     return false;
   }
 
   authenticate(username: string, password: string) {
-
-    console.log(username.concat(':').concat(password));
-    console.log('Basic ' + btoa(username.concat(':').concat(password)));
-
     const headers = new HttpHeaders({
       authorization : 'Basic ' + btoa(username.concat(':').concat(password))
     });
-
 
     this.http.get(this.baseUrl.concat("login"), {headers: headers}).subscribe(response => {
       if (response) {
         this.authenticated = true;
         this.loginError = false;
       } else {
+        console.log("Failed to log in");
         this.authenticated = false;
         this.loginError = true;
       }

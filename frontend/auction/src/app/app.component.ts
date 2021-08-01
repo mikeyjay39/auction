@@ -1,5 +1,13 @@
 import {Component, Injectable} from '@angular/core';
-import {HttpClient, HttpHeaders} from "@angular/common/http";
+import {
+  HttpClient,
+  HttpEvent,
+  HttpHandler,
+  HttpHeaders,
+  HttpRequest,
+  HttpXsrfTokenExtractor
+} from "@angular/common/http";
+import {Observable} from "rxjs";
 
 @Component({
   selector: 'app-root',
@@ -30,11 +38,21 @@ export class AppComponent {
   postBidsResponse: PostBidsResponse = <PostBidsResponse>{};
   baseUrl: string = 'http://localhost:8080/api/v1/';
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private tokenExtractor: HttpXsrfTokenExtractor) {
+  }
+
+  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    const headerName = 'XSRF-TOKEN';
+    const respHeaderName = 'X-XSRF-TOKEN';
+    let token = this.tokenExtractor.getToken() as string;
+    if (token !== null && !req.headers.has(headerName)) {
+      req = req.clone({ headers: req.headers.set(respHeaderName, token) });
+    }
+    return next.handle(req);
   }
 
   getAllAuctionItems() {
-    this.http.get(this.baseUrl.concat("auctionItems")).subscribe(
+    this.http.get(this.baseUrl.concat("auctionItems"), { withCredentials: true }).subscribe(
       (response) => {
         this.auctionItems = (<AuctionItemsResponse>response);
       }
@@ -46,7 +64,7 @@ export class AppComponent {
     requestUrl = this.baseUrl.concat("auctionItems/").concat(id);
     console.log(requestUrl);
 
-    this.http.get(requestUrl.toString()).subscribe(
+    this.http.get(requestUrl.toString(), { withCredentials: true }).subscribe(
       (response) => {
         this.auctionItems.status = (<AuctionItemResponse>response).status;
         this.auctionItems.result = [];
@@ -64,7 +82,7 @@ export class AppComponent {
         description: this.postAuctionItemsReserveItemDescription
       }
     }
-    this.http.post(this.baseUrl.concat("auctionItems"), request)
+    this.http.post(this.baseUrl.concat("auctionItems"), request, { withCredentials: true })
       .subscribe(
         (response) => {
           this.postAuctionItemsResponse.status = (<AuctionItemResponse>response).status;
@@ -78,7 +96,7 @@ export class AppComponent {
     console.log(this.postBidsRequest.maxAutoBidAmount);
     console.log(this.postBidsRequest.bidderName);
 
-    this.http.post(this.baseUrl.concat("bids"), this.postBidsRequest)
+    this.http.post(this.baseUrl.concat("bids"), this.postBidsRequest, { withCredentials: true })
       .subscribe(
         (response) => {
           this.postBidsResponse.status = (<PostBidsResponse>response).status;

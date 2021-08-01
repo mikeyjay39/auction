@@ -6,6 +6,7 @@ import com.example.auction.repository.AuctionItemRepository;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -20,18 +21,22 @@ public class AuctionItemDao {
 		this.auctionItemRepository = auctionItemRepository;
 	}
 
-	@CachePut(value = "auctionItem")
+	@Caching(put = {
+			@CachePut(value = "auctionItem", key = "#auctionItem.id"),
+			@CachePut(value = "itemAuctionItem", key = "#auctionItem.item.id")
+	}
+	)
 	@CacheEvict(value = "auctionItems", allEntries = true)
 	public AuctionItem save(AuctionItem auctionItem) {
 		return auctionItemRepository.save(auctionItem);
 	}
 
-	@Cacheable(value = "auctionItem")
+	@Cacheable(value = "itemAuctionItem", key = "#item.id")
 	public Optional<AuctionItem> findOneByItem(Item item) {
 		return auctionItemRepository.findOneByItem(item);
 	}
 
-	@Cacheable(value = "auctionItem")
+	@Cacheable(value = "auctionItem", key = "#id")
 	public Optional<AuctionItem> findOneFetchItem(Long id) {
 		return auctionItemRepository.findOneFetchItem(id);
 	}

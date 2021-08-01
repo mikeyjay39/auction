@@ -1,0 +1,166 @@
+<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
+<!-- * * * * * * * * * * * The content below * * * * * * * * * * * -->
+<!-- * * * * * * * * * * is only a placeholder * * * * * * * * * * -->
+<!-- * * * * * * * * * * and can be replaced. * * * * * * * * * * * -->
+<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
+<!-- * * * * * * * * * Delete the template below * * * * * * * * * * -->
+<!-- * * * * * * * to get started with your project! * * * * * * * * -->
+<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
+
+<div class="row" style="background-color: gainsboro;">
+  <h1 class="text-center">
+    {{title}}
+  </h1>
+</div>
+
+<div id="background" style="background-color: gainsboro;">
+
+  <div id="content" class="container-fluid" style="margin-left: 2%; margin-right: 2%; padding-left:5%; padding-right:5%;
+  background-color: white;">
+
+    <div class="row">
+      <div id="postAuctionItemInput" class="row">
+        <div class="col-sm-6 text-center">
+          <h3 class="text-center">
+            Post Auction Item Input
+          </h3>
+          <div class="form-group">
+            <label for="auctionItemReservePrice">Reserve Price:</label>
+            <input type="number" value="1" min="1" class="form-control" id="auctionItemReservePrice"
+                   [(ngModel)]="postAuctionItemsReservePrice">
+          </div>
+          <div class="form-group">
+            <label for="auctionItemItemId">Item Id:</label>
+            <input type="number" class="form-control" id="auctionItemItemId"
+                   [(ngModel)]="postAuctionItemsReserveItemId">
+          </div>
+          <div class="form-group">
+            <label for="auctionItemDescription">Description:</label>
+            <input type="text" class="form-control" id="auctionItemDescription"
+                   [(ngModel)]="postAuctionItemsReserveItemDescription">
+          </div>
+          <button type="submit" class="btn btn-default" (click)="postAuctionItems()">Submit</button>
+
+        </div>
+        <div id="postAuctionItemOutput" class="col-sm-6 text-center">
+          <h3 class="text-center">
+            Post Auction Item Output
+          </h3>
+          <div id="postAuctionItemOutputContent">
+            {{postAuctionItemsResponse.status}}
+            <br>
+            <p *ngIf="postAuctionItemsResponse.result">auctionId: {{postAuctionItemsResponse.result.auctionItemId}}
+            </p>
+          </div>
+        </div>
+      </div>
+      <hr>
+    </div>
+
+    <div class="form-group row text-center" style="background-color: whitesmoke">
+      <div class="col-sm-4">
+      </div>
+      <div class="col-sm-4">
+        <h3 class="text-center">
+          Get Auction Item Input
+        </h3>
+        <label for="getAuctionItemId">Auction Item Id:</label>
+        <input type="number" class="form-control" id="getAuctionItemId" #getAuctionIdNg>
+        <br>
+        <input type="button" value="Get" class="btn btn-default" (click)="getAuctionItems(getAuctionIdNg.value)"
+        style="margin: 5px"/>
+        <input type="button" value="Get All" class="btn btn-default" (click)="getAllAuctionItems()"
+               style="margin: 5px"/>
+      </div>
+      <div class="col-sm-4">
+      </div>
+    </div>
+
+    <div class="row">
+      <div>
+        <h3 class="text-center">
+          Get Auction Item Output
+        </h3>
+        <p class="text-center">
+          {{auctionItems.status}}
+        </p>
+        <table class="table" style="text-align:center">
+          <thead>
+          <tr>
+            <th style="text-align:center">Auction Item Id</th>
+            <th style="text-align:center">Reserve Price</th>
+            <th style="text-align:center">Current Bid</th>
+            <th style="text-align:center">Max Auto Bid</th>
+            <th style="text-align:center">Item Id</th>
+            <th style="text-align:center">Item Description</th>
+            <th style="text-align:center">Bidder Name</th>
+          </tr>
+          </thead>
+          <tbody>
+
+          <tr *ngFor="let result of auctionItems.result">
+            <td>{{result.auctionItemId}}</td>
+            <td>{{result.reservePrice}}</td>
+            <td>{{result.currentBid}}</td>
+            <td>{{result.maxAutoBidAmount}}</td>
+            <td>{{result.item.itemId}}</td>
+            <td>{{result.item.description}}</td>
+            <td>{{result.bidderName}}</td>
+          </tr>
+
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="row" id="postBidsDiv" style="background-color: whitesmoke">
+      <div class="row col-sm-6 text-center" id="postBidsDivInput">
+        <h3 class="text-center">
+          Bid Input
+        </h3>
+        <hr>
+        <label for="bidderNameSelect">Choose a bidder:</label>
+        <br>
+        <select id="bidderNameSelect" (change) = "bidderChanged($event)" [(ngModel)]="bidderName">
+          <option [ngValue]="undefined" disabled>Select An Option</option>
+          <option *ngFor="let name of bidderNames">{{name}}</option>
+        </select>
+        <br>
+
+        <label for="postBidAuctionItemId" style="margin-top: 5px">Auction Item Id:</label>
+        <input type="number" class="form-control" id="postBidAuctionItemId"
+               [(ngModel)]="postBidsRequest.auctionItemId">
+        <br>
+        <label for="postBidMaxAutoBidAmount">Max Auto Bid Amount:</label>
+        <input type="number" class="form-control" id="postBidMaxAutoBidAmount"
+               [(ngModel)]="postBidsRequest.maxAutoBidAmount">
+        <br>
+        <input type="button" value="Post Bid" class="btn btn-default" (click)="postBid()" style="margin-bottom: 5px"/>
+      </div>
+
+      <div class="row col-sm-6 text-center" id="postBidsDivOutput">
+        <h3 class="text-center">
+          Bid Output
+        </h3>
+        <hr>
+        <p class="text-center">
+          {{postBidsResponse.status}}
+        </p>
+          <br>
+          <p *ngIf="postBidsResponse.result">
+          auctionId: {{postBidsResponse.result.auctionItemId}}
+        </p>
+      </div>
+    </div>
+    <hr>
+  </div>
+</div>
+
+<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
+<!-- * * * * * * * * * * * The content above * * * * * * * * * * * -->
+<!-- * * * * * * * * * * is only a placeholder * * * * * * * * * * -->
+<!-- * * * * * * * * * * and can be replaced. * * * * * * * * * * * -->
+<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
+<!-- * * * * * * * * * * End of Placeholder * * * * * * * * * * * -->
+<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
+

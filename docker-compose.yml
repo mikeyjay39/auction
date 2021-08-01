@@ -22,7 +22,7 @@ services:
       - elasticsearch
   auction:
     build:
-      context: .
+      context: backend/
       dockerfile: Dockerfile
     environment:
       - "SPRING_PROFILES_ACTIVE=docker"
@@ -30,3 +30,9 @@ services:
       - "8080:8080"
     depends_on:
       - postgres
+  frontend:
+    build:
+      context: frontend/auction
+      dockerfile: Dockerfile
+    ports:
+      - "4200:80"

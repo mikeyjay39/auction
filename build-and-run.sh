@@ -1,3 +1,5 @@
 #!/usr/bin/bash
-mvn clean install
-docker-compose up
+
+./shutdown-containers.sh
+mvn -f backend/pom.xml clean install -DskipTests=true
+docker-compose up --build

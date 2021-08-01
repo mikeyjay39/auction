@@ -111,9 +111,18 @@ no example request parameters to control the pagination. Therefore
 I went for a full join on the tables to return everything. This is
 bad as the app scales.
 
+### Api Responses
+The requirements mentioned that the user should be notified in certain
+situations, such as being outbid or the reserve price not being met.
+Since all of this logic is in the back end I decided to modify the
+body of the HTTP responses being sent from the back end. The top level
+of the json body has a `status` field which will hold such notification
+messages when their request doesn't succeed. The other top level field
+is `result` which will match the example response body listed in the
+requirements.
+
 ### TODO
 * Post Bids in UI
 * Authentication with Spring Security
 * UML diagrams
 * Remove string literals (add i18n)
-* Debug Post Auction Item for duplicate items

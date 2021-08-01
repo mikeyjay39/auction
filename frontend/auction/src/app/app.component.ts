@@ -15,6 +15,8 @@ export class AppComponent {
   postAuctionItemsReserveItemId: string = '';
   postAuctionItemsReserveItemDescription: string = '';
   postAuctionItemsResponse: PostAuctionItemsResponse = <PostAuctionItemsResponse>{};
+  postBidsRequest: PostBidsRequest = <PostBidsRequest>{};
+  postBidsResponse: PostBidsResponse = <PostBidsResponse>{};
   baseUrl: string = 'http://localhost:8080/api/v1/';
 
   constructor(private http: HttpClient) {
@@ -59,6 +61,20 @@ export class AppComponent {
         }
       )
   }
+
+  postBid() {
+    console.log(this.postBidsRequest.auctionItemId);
+    console.log(this.postBidsRequest.maxAutoBidAmount);
+    console.log(this.postBidsRequest.bidderName);
+
+    this.http.post(this.baseUrl.concat("bids"), this.postBidsRequest)
+      .subscribe(
+        (response) => {
+          this.postBidsResponse.status = (<PostBidsResponse>response).status;
+          this.postBidsResponse.result = (<PostBidsResponse>response).result;
+        }
+      )
+  }
 }
 
 interface AuctionItemsResponse {
@@ -97,4 +113,15 @@ interface PostAuctionItemsResponse {
 
 interface AuctionItemId {
   auctionItemId: string
+}
+
+interface PostBidsRequest {
+  auctionItemId: string
+  maxAutoBidAmount: number
+  bidderName: string
+}
+
+interface PostBidsResponse {
+  status: string
+  result: AuctionItemId
 }

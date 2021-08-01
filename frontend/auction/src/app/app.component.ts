@@ -10,12 +10,18 @@ import {HttpClient} from "@angular/common/http";
 export class AppComponent {
   title = 'auction';
   auctionItems: AuctionItemsResponse = <AuctionItemsResponse>{};
+  postAuctionItemsRequest: PostAuctionItemsRequest = <PostAuctionItemsRequest>{};
+  postAuctionItemsReservePrice: number = 1;
+  postAuctionItemsReserveItemId: string = '';
+  postAuctionItemsReserveItemDescription: string = '';
+  postAuctionItemsResponse: PostAuctionItemsResponse = <PostAuctionItemsResponse>{};
+  baseUrl: string = 'http://localhost:8080/api/v1/';
 
   constructor(private http: HttpClient) {
   }
 
   getAllAuctionItems() {
-    this.http.get("http://localhost:8080/api/v1/auctionItems").subscribe(
+    this.http.get(this.baseUrl.concat("auctionItems")).subscribe(
       (response) => {
         this.auctionItems = (<AuctionItemsResponse>response);
       }
@@ -24,7 +30,7 @@ export class AppComponent {
 
   getAuctionItems(id: string) {
     let requestUrl: String;
-    requestUrl = "http://localhost:8080/api/v1/auctionItems/".concat(id);
+    requestUrl = this.baseUrl.concat("auctionItems/").concat(id);
     console.log(requestUrl);
 
     this.http.get(requestUrl.toString()).subscribe(
@@ -34,6 +40,24 @@ export class AppComponent {
         this.auctionItems.result[0] = (<AuctionItemResponse>response).result;
       }
     );
+  }
+
+  postAuctionItems() {
+    console.log(this.postAuctionItemsReservePrice);
+    let request = {
+      reservePrice: this.postAuctionItemsReservePrice,
+      item: {
+        itemId: this.postAuctionItemsReserveItemId,
+        description: this.postAuctionItemsReserveItemDescription
+      }
+    }
+    this.http.post(this.baseUrl.concat("auctionItems"), request)
+      .subscribe(
+        (response) => {
+          this.postAuctionItemsResponse.status = (<AuctionItemResponse>response).status;
+          this.postAuctionItemsResponse.result = (<AuctionItemResponse>response).result;
+        }
+      )
   }
 }
 
@@ -59,4 +83,18 @@ interface AuctionItem {
 interface Item {
   itemId: string
   description: string
+}
+
+interface PostAuctionItemsRequest {
+  reservePrice: number
+  item: Item
+}
+
+interface PostAuctionItemsResponse {
+  status: string
+  result: AuctionItemId
+}
+
+interface AuctionItemId {
+  auctionItemId: string
 }

@@ -20,28 +20,32 @@
     <h3 class="text-center">
       Post Auction Item Input
     </h3>
-    <form>
     <div class="form-group">
       <label for="auctionItemReservePrice">Reserve Price:</label>
-      <input type="number" class="form-control" id="auctionItemReservePrice">
+      <input type="number" step="0.01" class="form-control" id="auctionItemReservePrice"
+             [(ngModel)]="postAuctionItemsReservePrice">
     </div>
       <div class="form-group">
         <label for="auctionItemItemId">Item Id:</label>
-        <input type="number" class="form-control" id="auctionItemItemId">
+        <input type="number" class="form-control" id="auctionItemItemId"
+               [(ngModel)]="postAuctionItemsReserveItemId">
       </div>
       <div class="form-group">
         <label for="auctionItemDescription">Description:</label>
-        <input type="text" class="form-control" id="auctionItemDescription">
+        <input type="text" class="form-control" id="auctionItemDescription"
+               [(ngModel)]="postAuctionItemsReserveItemDescription">
       </div>
-      <button type="submit" class="btn btn-default">Submit</button>
-    </form>
+      <button type="submit" class="btn btn-default" (click)="postAuctionItems()">Submit</button>
+
   </div>
     <div id="postAuctionItemOutput" class="col-sm-6 text-center">
       <h3 class="text-center">
         Post Auction Item Output
       </h3>
       <div id="postAuctionItemOutputContent">
-
+        {{postAuctionItemsResponse.status}}
+        <br>
+        auctionId: {{postAuctionItemsResponse.result.auctionItemId}}
       </div>
     </div>
   </div>

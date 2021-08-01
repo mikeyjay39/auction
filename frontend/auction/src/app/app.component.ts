@@ -9,6 +9,13 @@ import {HttpClient} from "@angular/common/http";
 @Injectable()
 export class AppComponent {
   title = 'auction';
+  bidderName: string = '';
+  bidderNames = [
+    "John Lennon",
+    "Paul McCartney",
+    "George Harrison",
+    "Ringo Starr"
+  ]
   auctionItems: AuctionItemsResponse = <AuctionItemsResponse>{};
   postAuctionItemsRequest: PostAuctionItemsRequest = <PostAuctionItemsRequest>{};
   postAuctionItemsReservePrice: number = 1;
@@ -74,6 +81,11 @@ export class AppComponent {
           this.postBidsResponse.result = (<PostBidsResponse>response).result;
         }
       )
+  }
+
+  bidderChanged($event: Event) {
+    console.log("Bidder name set to ".concat(this.bidderName));
+    this.postBidsRequest.bidderName = this.bidderName;
   }
 }
 

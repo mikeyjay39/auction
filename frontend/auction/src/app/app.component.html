@@ -18,7 +18,7 @@
   <div [hidden]="isAuthenticated()" id="login" class="container-fluid"
        style="margin-left: 2%; margin-right: 2%; padding-left:5%; padding-right:5%; background-color: white;">
 
-    <div class="alert alert-danger" [hidden]="isLoginError()">
+    <div class="alert alert-danger" [hidden]="isNoLoginError()">
       There was a problem logging in. Please try again.
     </div>
     <form role="form" (submit)="login()">

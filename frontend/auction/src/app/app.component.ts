@@ -18,7 +18,7 @@ import {Observable} from "rxjs";
 export class AppComponent {
   title = 'auction';
   authenticated = false;
-  loginError:boolean = false;
+  noLoginError: boolean = true;
   username: string = '';
   password: string = '';
   bidderName: string = '';
@@ -46,13 +46,13 @@ export class AppComponent {
     const respHeaderName = 'X-XSRF-TOKEN';
     let token = this.tokenExtractor.getToken() as string;
     if (token !== null && !req.headers.has(headerName)) {
-      req = req.clone({ headers: req.headers.set(respHeaderName, token) });
+      req = req.clone({headers: req.headers.set(respHeaderName, token)});
     }
     return next.handle(req);
   }
 
   getAllAuctionItems() {
-    this.http.get(this.baseUrl.concat("auctionItems"), { withCredentials: true }).subscribe(
+    this.http.get(this.baseUrl.concat("auctionItems"), {withCredentials: true}).subscribe(
       (response) => {
         this.auctionItems = (<AuctionItemsResponse>response);
       }
@@ -64,7 +64,7 @@ export class AppComponent {
     requestUrl = this.baseUrl.concat("auctionItems/").concat(id);
     console.log(requestUrl);
 
-    this.http.get(requestUrl.toString(), { withCredentials: true }).subscribe(
+    this.http.get(requestUrl.toString(), {withCredentials: true}).subscribe(
       (response) => {
         this.auctionItems.status = (<AuctionItemResponse>response).status;
         this.auctionItems.result = [];
@@ -82,7 +82,7 @@ export class AppComponent {
         description: this.postAuctionItemsReserveItemDescription
       }
     }
-    this.http.post(this.baseUrl.concat("auctionItems"), request, { withCredentials: true })
+    this.http.post(this.baseUrl.concat("auctionItems"), request, {withCredentials: true})
       .subscribe(
         (response) => {
           this.postAuctionItemsResponse.status = (<AuctionItemResponse>response).status;
@@ -96,7 +96,7 @@ export class AppComponent {
     console.log(this.postBidsRequest.maxAutoBidAmount);
     console.log(this.postBidsRequest.bidderName);
 
-    this.http.post(this.baseUrl.concat("bids"), this.postBidsRequest, { withCredentials: true })
+    this.http.post(this.baseUrl.concat("bids"), this.postBidsRequest, {withCredentials: true})
       .subscribe(
         (response) => {
           this.postBidsResponse.status = (<PostBidsResponse>response).status;
@@ -114,8 +114,8 @@ export class AppComponent {
     return this.authenticated;
   }
 
-  isLoginError() {
-    return this.loginError;
+  isNoLoginError() {
+    return this.noLoginError;
   }
 
   login() {
@@ -125,19 +125,25 @@ export class AppComponent {
 
   authenticate(username: string, password: string) {
     const headers = new HttpHeaders({
-      authorization : 'Basic ' + btoa(username.concat(':').concat(password))
+      authorization: 'Basic ' + btoa(username.concat(':').concat(password))
     });
 
-    this.http.get(this.baseUrl.concat("login"), {headers: headers}).subscribe(response => {
-      if (response) {
-        this.authenticated = true;
-        this.loginError = false;
-      } else {
-        console.log("Failed to log in");
+    this.http.get(this.baseUrl.concat("login"), {headers: headers, observe: "response"}).subscribe(response => {
+        console.log(response.status);
+        if (response) {
+          this.authenticated = true;
+          this.noLoginError = true;
+        } else {
+          console.log("Failed to log in");
+          this.authenticated = false;
+          this.noLoginError = false;
+        }
+      },
+      (error) => {
+        console.error("Failed to log in")
         this.authenticated = false;
-        this.loginError = true;
-      }
-    });
+        this.noLoginError = false;
+      })
 
   }
 }

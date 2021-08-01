@@ -1,5 +1,5 @@
 import {Component, Injectable} from '@angular/core';
-import {HttpClient} from "@angular/common/http";
+import {HttpClient, HttpHeaders} from "@angular/common/http";
 
 @Component({
   selector: 'app-root',
@@ -9,6 +9,10 @@ import {HttpClient} from "@angular/common/http";
 @Injectable()
 export class AppComponent {
   title = 'auction';
+  authenticated = false;
+  loginError = false;
+  username: string = '';
+  password: string = '';
   bidderName: string = '';
   bidderNames = [
     "John Lennon",
@@ -86,6 +90,37 @@ export class AppComponent {
   bidderChanged($event: Event) {
     console.log("Bidder name set to ".concat(this.bidderName));
     this.postBidsRequest.bidderName = this.bidderName;
+  }
+
+  isAuthenticated() {
+    return this.authenticated;
+  }
+
+  login() {
+    this.authenticate(this.username, this.password);
+    return false;
+  }
+
+  authenticate(username: string, password: string) {
+
+    console.log(username.concat(':').concat(password));
+    console.log('Basic ' + btoa(username.concat(':').concat(password)));
+
+    const headers = new HttpHeaders({
+      authorization : 'Basic ' + btoa(username.concat(':').concat(password))
+    });
+
+
+    this.http.get(this.baseUrl.concat("login"), {headers: headers}).subscribe(response => {
+      if (response) {
+        this.authenticated = true;
+        this.loginError = false;
+      } else {
+        this.authenticated = false;
+        this.loginError = true;
+      }
+    });
+
   }
 }
 

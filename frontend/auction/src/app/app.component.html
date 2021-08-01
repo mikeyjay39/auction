@@ -118,26 +118,22 @@
         <h3 class="text-center">
           Bid Input
         </h3>
-
-        <label for="bidderNameSelect" style="margin-right">Choose a bidder:</label>
+        <hr>
+        <label for="bidderNameSelect">Choose a bidder:</label>
         <br>
         <select id="bidderNameSelect" (change) = "bidderChanged($event)" [(ngModel)]="bidderName">
           <option [ngValue]="undefined" disabled>Select An Option</option>
           <option *ngFor="let name of bidderNames">{{name}}</option>
         </select>
-        <hr>
+        <br>
 
-        <label for="postBidAuctionItemId">Auction Item Id:</label>
+        <label for="postBidAuctionItemId" style="margin-top: 5px">Auction Item Id:</label>
         <input type="number" class="form-control" id="postBidAuctionItemId"
                [(ngModel)]="postBidsRequest.auctionItemId">
         <br>
         <label for="postBidMaxAutoBidAmount">Max Auto Bid Amount:</label>
         <input type="number" class="form-control" id="postBidMaxAutoBidAmount"
                [(ngModel)]="postBidsRequest.maxAutoBidAmount">
-        <br>
-        <!--
-        <input type="text" class="form-control" id="postBidBidderName"
-               [(ngModel)]="postBidsRequest.bidderName">-->
         <br>
         <input type="button" value="Post Bid" class="btn btn-default" (click)="postBid()" style="margin-bottom: 5px"/>
       </div>
@@ -146,6 +142,7 @@
         <h3 class="text-center">
           Bid Output
         </h3>
+        <hr>
         <p class="text-center">
           {{postBidsResponse.status}}
         </p>

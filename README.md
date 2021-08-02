@@ -6,6 +6,9 @@
 
 Access web app by going to http://localhost:4200/
 
+Log in as either `John Lennon`, `Paul McCartney`, `George Harrison`, or
+`Ringo Starr`. Password for all of them is `password`.
+
 Run `./shutdown-containers.sh` to close any containers which did not close
 properly.
 
@@ -121,8 +124,10 @@ messages when their request doesn't succeed. The other top level field
 is `result` which will match the example response body listed in the
 requirements.
 
+## Extras
+Authentication is added with a login. User's passwords are stored as a 
+hash. CSRF protection is enabled.
+
 ### TODO
-* Post Bids in UI
-* Authentication with Spring Security
 * UML diagrams
 * Remove string literals (add i18n)

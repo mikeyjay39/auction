@@ -12,11 +12,13 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.concurrent.CompletableFuture;
 
 
 @Service
@@ -33,7 +35,8 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
 	}
 
 	@Override
-	public ApiStatus logPostBids(PostBidsRequest request) {
+	@Async
+	public CompletableFuture<ApiStatus> logPostBids(PostBidsRequest request) {
 		IndexRequest indexRequest = new IndexRequest("bids");
 		ElasticsearchBidDto dto = convertToBidDto(request);
 
@@ -46,15 +49,15 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
 				case CREATED:
 				case UPDATED:
 					LOGGER.trace("Successfully logged PostBidsRequest to Elasticsearch");
-					return ApiStatus.SUCCESS;
+					return CompletableFuture.completedFuture(ApiStatus.SUCCESS);
 				default:
 					LOGGER.warn("Problem logging PostBidsRequest to Elasticsearch");
-					return ApiStatus.FAILURE;
+					return CompletableFuture.completedFuture(ApiStatus.FAILURE);
 			}
 
 		} catch (IOException e) {
 			LOGGER.error(e.getMessage(), e);
-			return ApiStatus.FAILURE;
+			return CompletableFuture.completedFuture(ApiStatus.FAILURE);
 		}
 	}
 

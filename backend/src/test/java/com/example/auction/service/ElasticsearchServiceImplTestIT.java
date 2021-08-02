@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
+import java.util.concurrent.CompletableFuture;
 
 class ElasticsearchServiceImplTestIT extends ElasticsearchTestFactory {
 
@@ -15,16 +16,17 @@ class ElasticsearchServiceImplTestIT extends ElasticsearchTestFactory {
 	private ElasticsearchServiceImpl elasticsearchService;
 
 	@Test
-	void logPostBids() {
+	void logPostBids() throws Exception {
 		logPostBidsTest();
 	}
 
-	private void logPostBidsTest() {
+	private void logPostBidsTest() throws Exception {
 		PostBidsRequest postBidsRequest = new PostBidsRequest();
 		postBidsRequest.setBidderName("example");
 		postBidsRequest.setMaxAutoBidAmount(BigDecimal.ONE);
 		postBidsRequest.setAuctionItemId("1");
-		ApiStatus status = elasticsearchService.logPostBids(postBidsRequest);
+		CompletableFuture<ApiStatus> statusFuture = elasticsearchService.logPostBids(postBidsRequest);
+		ApiStatus status = statusFuture.get();
 		Assert.assertEquals(ApiStatus.SUCCESS, status);
 	}
 }

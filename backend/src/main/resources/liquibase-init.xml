@@ -26,14 +26,20 @@ http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd ">
             <column autoIncrement="true" name="id" type="bigint">
                 <constraints primaryKey="true" primaryKeyName="PK_auction_item"/>
             </column>
-            <column autoIncrement="true" name="item" type="bigint">
-                <constraints foreignKeyName="fk_item" references="item(id)" nullable="false"/>
-            </column>
+            <column autoIncrement="true" name="item_id" type="bigint"/>
             <column name="user_id" type="bigint"/>
             <column name="current_bid" type="numeric(12,2)"/>
             <column name="max_auto_bid_amount" type="numeric(12,2)"/>
             <column name="reserve_price" type="numeric(12,2)"/>
         </createTable>
+    </changeSet>
+    <changeSet id="add-foreign-keys" author="mikeyjay">
+        <preConditions>
+            <columnExists tableName="auction_item" columnName="item_id"/>
+        </preConditions>
+        <addForeignKeyConstraint baseTableName="auction_item" baseColumnNames="item_id"
+                                 constraintName="fk_auction_item_item_id" referencedTableName="item"
+                                 referencedColumnNames="id"/>
     </changeSet>
     <changeSet id="init-data" author="mikeyjay">
         <sqlFile path="data.sql"/>

@@ -128,6 +128,16 @@ requirements.
 Authentication is added with a login. User's passwords are stored as a 
 hash. CSRF protection is enabled.
 
+## Diagrmas
+
+### Schema
+![schema](diagrams/schema.png)
+
 ### TODO
 * UML diagrams
 * Remove string literals (add i18n)
+* Add log out functionality
+
+### Known Issues
+* Sometimes asks for login information again after logging in and submitting
+a result request.

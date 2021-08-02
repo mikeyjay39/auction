@@ -31,7 +31,7 @@ public class AuctionItem {
 	private BigDecimal maxAutoBidAmount = BigDecimal.ZERO;
 
 	@OneToOne
-	@JoinColumn(name = "item")
+	@JoinColumn(name = "item_id")
 	private Item item;
 
 	@ManyToOne

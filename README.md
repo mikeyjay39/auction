@@ -128,6 +128,19 @@ requirements.
 Authentication is added with a login. User's passwords are stored as a 
 hash. CSRF protection is enabled.
 
+## Diagrmas
+
+### Schema
+![schema](diagrams/schema.png)
+
+### Post Bids Sequence Diagram
+![postBidsSequence](diagrams/postBidsSequence.png)
+
 ### TODO
-* UML diagrams
+* Add XSS filter
 * Remove string literals (add i18n)
+* Add log out functionality
+
+### Known Issues
+* Sometimes asks for login information again after logging in and submitting
+a result request.

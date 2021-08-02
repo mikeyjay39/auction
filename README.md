@@ -133,8 +133,11 @@ hash. CSRF protection is enabled.
 ### Schema
 ![schema](diagrams/schema.png)
 
+### Post Bids Sequence Diagram
+![postBidsSequence](diagrams/postBidsSequence.png)
+
 ### TODO
-* UML diagrams
+* Add XSS filter
 * Remove string literals (add i18n)
 * Add log out functionality
 

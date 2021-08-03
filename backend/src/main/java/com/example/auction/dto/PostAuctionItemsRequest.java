@@ -1,11 +1,13 @@
 package com.example.auction.dto;
 
+import javax.validation.Valid;
 import java.math.BigDecimal;
 
 public class PostAuctionItemsRequest {
 
 	private BigDecimal reservePrice;
 
+	@Valid
 	private ItemDto item;
 
 	public BigDecimal getReservePrice() {

@@ -1,9 +1,12 @@
 package com.example.auction.dto;
 
+import javax.validation.constraints.Pattern;
+
 public class ItemDto {
 
 	private String itemId;
 
+	@Pattern(message="Only alphanumeric characters allowed for description", regexp = "[a-zA-Z0-9 ]+")
 	private String description;
 
 	public String getItemId() {

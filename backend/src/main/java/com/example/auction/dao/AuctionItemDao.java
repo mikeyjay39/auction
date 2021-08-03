@@ -8,11 +8,13 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 import java.util.Optional;
 
 @Component
+@Validated
 public class AuctionItemDao {
 
 	private final AuctionItemRepository auctionItemRepository;
@@ -21,12 +23,11 @@ public class AuctionItemDao {
 		this.auctionItemRepository = auctionItemRepository;
 	}
 
-	@Caching(put = {
-			@CachePut(value = "auctionItem", key = "#auctionItem.id"),
-			@CachePut(value = "itemAuctionItem", key = "#auctionItem.item.id")
-	}
-	)
-	@CacheEvict(value = "auctionItems", allEntries = true)
+
+	@CachePut(value = "auctionItem", key = "#auctionItem.id")
+	@Caching(evict = {@CacheEvict(value = "auctionItems", allEntries = true),
+			@CacheEvict(value = "itemAuctionItem", key = "#auctionItem.item.id")
+	})
 	public AuctionItem save(AuctionItem auctionItem) {
 		return auctionItemRepository.save(auctionItem);
 	}

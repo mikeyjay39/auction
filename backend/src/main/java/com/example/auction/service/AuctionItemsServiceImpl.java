@@ -10,13 +10,17 @@ import com.example.auction.dto.PostAuctionItemsRequest;
 import com.example.auction.dto.PostAuctionItemsResponse;
 import com.example.auction.exception.AuctionItemException;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
+import javax.validation.Valid;
+import javax.validation.ValidationException;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Validated
 public class AuctionItemsServiceImpl implements AuctionItemsService {
 
 	private final AuctionItemDao auctionItemDao;
@@ -29,7 +33,7 @@ public class AuctionItemsServiceImpl implements AuctionItemsService {
 	}
 
 	@Override
-	public PostAuctionItemsResponse postAuctionItems(PostAuctionItemsRequest request) throws
+	public PostAuctionItemsResponse postAuctionItems(@Valid PostAuctionItemsRequest request) throws
 			AuctionItemException {
 
 		validatePostAuctionItemsRequest(request);
@@ -37,6 +41,8 @@ public class AuctionItemsServiceImpl implements AuctionItemsService {
 
 		try {
 			auctionItem = auctionItemDao.save(auctionItem);
+		} catch (ValidationException v) {
+			throw new ValidationException("Invalid input");
 		} catch (Exception e) {
 			throw new AuctionItemException(e.getMessage());
 		}
@@ -93,6 +99,7 @@ public class AuctionItemsServiceImpl implements AuctionItemsService {
 	private AuctionItem prepareAuctionItem(PostAuctionItemsRequest request) {
 		ItemDto itemDto = request.getItem();
 		Item item = itemDao.getById(new Long(itemDto.getItemId()));
+		item.setDescription(request.getItem().getDescription());
 		AuctionItem auctionItem = new AuctionItem();
 		auctionItem.setItem(item);
 		auctionItem.setReservePrice(request.getReservePrice());

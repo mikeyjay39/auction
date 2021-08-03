@@ -125,8 +125,10 @@ is `result` which will match the example response body listed in the
 requirements.
 
 ## Extras
-Authentication is added with a login. User's passwords are stored as a 
-hash. CSRF protection is enabled.
+Mostly security Authentication is added with a login. User's passwords 
+are stored as a hash. CSRF protection is enabled. The item description
+field is sanitized to prevent XSS. This is the only string field exposed
+by the API that gets persisted.
 
 ## Diagrmas
 
@@ -137,10 +139,14 @@ hash. CSRF protection is enabled.
 ![postBidsSequence](diagrams/postBidsSequence.png)
 
 ### TODO
-* Add XSS filter
 * Remove string literals (add i18n)
 * Add log out functionality
 
 ### Known Issues
 * Sometimes asks for login information again after logging in and submitting
 a result request.
+* I wasn't too clear on the requirements for the post auction item
+endpoint. An `Item Id` needs to be chosen from the existing items in
+the database. There are 4 so the valid values are 1 - 4. I let the 
+description field overwrite the default description value saved for
+that item.

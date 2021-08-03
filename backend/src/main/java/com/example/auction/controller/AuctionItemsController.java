@@ -16,7 +16,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import javax.validation.ValidationException;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/auctionItems")
@@ -57,6 +61,21 @@ public class AuctionItemsController {
 		} catch (AuctionItemException e) {
 			LOGGER.error(e.getMessage());
 			apiResponse.setStatus(e.getMessage());
+		} catch (ValidationException v) {
+			LOGGER.error(v.getMessage());
+			Optional<ConstraintViolation<?>> constraintViolationOptional = ((ConstraintViolationException) v)
+					.getConstraintViolations().stream()
+					.findFirst();
+
+			String errMsg = "";
+
+			if (constraintViolationOptional.isPresent()) {
+				errMsg = constraintViolationOptional.get().getMessage();
+			} else {
+				errMsg = v.getMessage();
+			}
+
+			apiResponse.setStatus(errMsg);
 		}
 
 		return apiResponse;
